@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class=""><head><script>window.livecodes = window.livecodes || {};</script><title>Untitled Project</title><meta name="title" content="Untitled Project"><meta charset="UTF-8">
+<html lang="en" class=""><head><script>window.livecodes = window.livecodes || {};</script><title>User with brokerage </title><meta name="title" content="User with brokerage "><meta name="description" content="Paid plan"><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="stylesheet" href="./style.css"><script src="https://cdn.jsdelivr.net/npm/es-module-shims@1.10.0/dist/es-module-shims.js" async=""></script><script type="importmap">{
   "imports": {}
 }</script></head><body>
@@ -234,49 +234,64 @@ body {
     gap: 1.5rem;
 }
 
-/* --- SLIDER STYLES --- */
+/* --- AUTO SLIDER STYLES --- */
 .slider-container {
     position: relative;
+    overflow-x: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* IE and Edge */
+}
+.slider-container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, and Opera */
 }
 .slider-track {
     display: flex;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
-    padding-bottom: 1rem; /* Space for scrollbar if it appears */
-    gap: 1.5rem;
-}
-.slider-track::-webkit-scrollbar {
-    display: none; /* Hide scrollbar for Chrome, Safari and Opera */
+    width: fit-content; /* Let it be as wide as its children */
 }
 .slider-item {
     flex: 0 0 auto;
     width: 220px;
+    margin-right: 1.5rem; /* Use margin instead of gap for animation */
 }
-.slider-btn {
+
+/* --- SLIDER NAVIGATION BUTTONS --- */
+.slider-nav-btn {
     position: absolute;
-    top: calc(50% - 30px); /* Adjust vertical position */
+    top: 50%;
     transform: translateY(-50%);
-    z-index: 10;
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(255, 255, 255, 0.7);
     border: 1px solid var(--border-color);
     border-radius: 50%;
     width: 40px;
     height: 40px;
-    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    transition: background-color 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    z-index: 10;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s, background-color 0.2s;
 }
-.slider-btn:hover {
+.slider-container:hover .slider-nav-btn {
+    opacity: 1;
+    visibility: visible;
+}
+.slider-nav-btn:hover {
     background-color: white;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
-.slider-btn.prev { left: -15px; }
-.slider-btn.next { right: -15px; }
+.slider-nav-btn.left {
+    left: 10px;
+}
+.slider-nav-btn.right {
+    right: 10px;
+}
+.slider-nav-btn svg {
+    width: 24px;
+    height: 24px;
+    fill: var(--primary-color);
+}
+
 
 /* --- CARD OVERLAY STYLES --- */
 .product-card, .offer-card {
@@ -458,6 +473,17 @@ body {
 .status-pending, .status-pending_payment { background-color: #ffc107; color: var(--text-color); }
 .status-rejected, .status-cancelled { background-color: #dc3545; }
 .status-payment_verified, .status-shipped { background-color: var(--info-color); }
+.item-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+}
+@media (min-width: 500px) {
+    .item-actions {
+        flex-direction: row;
+    }
+}
 
 
 /* --- MODAL, SPINNER, CART, TOAST --- */
@@ -563,6 +589,11 @@ body {
     align-items: center;
     padding: 1.5rem;
     border-bottom: 1px solid var(--border-color);
+}
+.cart-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 .cart-header h2 {
     margin: 0;
@@ -793,86 +824,6 @@ body {
     gap: 0.5rem;
 }
 
-/* --- CHATBOT MODAL --- */
-.chatbot-modal-overlay { z-index: 1600; }
-.chatbot-modal-content {
-    max-width: 400px;
-    height: 70vh;
-    max-height: 600px;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-}
-.chatbot-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 1.5rem;
-    background-color: var(--primary-color);
-    color: white;
-    border-top-left-radius: var(--border-radius);
-    border-top-right-radius: var(--border-radius);
-}
-.chatbot-header h3 { margin: 0; }
-.chatbot-header .modal-close-btn { color: white; position: static; font-size: 1.5rem; }
-.chatbot-messages {
-    flex-grow: 1;
-    overflow-y: auto;
-    padding: 1rem;
-    background-color: var(--background-color);
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-.message-bubble-wrapper { display: flex; }
-.user-wrapper { justify-content: flex-end; }
-.bot-wrapper { justify-content: flex-start; }
-.message-bubble {
-    padding: 0.75rem 1rem;
-    border-radius: 18px;
-    max-width: 80%;
-    line-height: 1.4;
-    word-wrap: break-word;
-}
-.user-message {
-    background-color: var(--primary-color);
-    color: white;
-    border-bottom-right-radius: 4px;
-}
-.bot-message {
-    background-color: var(--card-background);
-    color: var(--text-color);
-    border: 1px solid var(--border-color);
-    border-bottom-left-radius: 4px;
-}
-.bot-message a {
-    color: var(--secondary-color);
-    font-weight: bold;
-    text-decoration: underline;
-}
-.chatbot-input-area {
-    display: flex;
-    padding: 1rem;
-    border-top: 1px solid var(--border-color);
-    gap: 0.5rem;
-}
-.chatbot-input-area input {
-    flex-grow: 1;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    padding: 0.75rem;
-}
-.chatbot-input-area button {
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 0.75rem 1.25rem;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    font-weight: bold;
-}
-
-
 @media (max-width: 768px) {
     .header-content { padding: 0 0.5rem; }
     .header-actions { gap: 0.25rem; }
@@ -882,9 +833,7 @@ body {
     .logo { font-size: 1.5rem; }
     .cart-item { flex-direction: column; align-items: flex-start; }
     .cart-item-actions { flex-direction: row; align-items: center; width: 100%; justify-content: space-between; }
-    .slider-btn { display: none; } /* Hide buttons on mobile, rely on swipe */
-
-    /* Swiggy Style Slider for Mobile */
+    
     .slider-item {
         width: 160px;
     }
@@ -1067,97 +1016,8 @@ const PaymentModal = ({ show, onCancel, orderSummary, onSubmit, isSubmitting, se
     );
 };
 
-
-// --- CHATBOT MODAL ---
-const ChatbotModal = ({ show, onClose }) => {
-    const [messages, setMessages] = useState([
-        { sender: 'bot', text: "Hi! Welcome to Navrose Support. How can I help you today? You can ask about orders, ads, or your seller profile." }
-    ]);
-    const [inputValue, setInputValue] = useState('');
-    const messagesEndRef = useRef(null);
-
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    };
-
-    useEffect(scrollToBottom, [messages]);
-
-    const generateBotResponse = (userInput) => {
-        const lowerInput = userInput.toLowerCase();
-        
-        const adminContactLink = `<a href="https://wa.me/917696272780" target="_blank" rel="noopener noreferrer">contact our admin on WhatsApp</a>`;
-
-        if (lowerInput.includes('order') || lowerInput.includes('delivery') || lowerInput.includes('status')) {
-            return "You can check your order status on the 'My Orders' page. For issues with an order, please contact the seller directly. If you cannot resolve it, you can " + adminContactLink + ".";
-        }
-        if (lowerInput.includes('seller') || lowerInput.includes('profile')) {
-            return "If you are an approved seller, you can manage your sales and update your UPI ID from the 'My Sales' and 'My Seller Profile' pages, accessible from the user menu.";
-        }
-        if (lowerInput.includes('ad') || lowerInput.includes('post') || lowerInput.includes('sell')) {
-            return "To sell an item, you must be an approved seller. Once approved, click your profile icon and select 'Sell an Item'. Your ad will become visible after admin approval.";
-        }
-        if (lowerInput.includes('payment') || lowerInput.includes('upi') || lowerInput.includes('pay')) {
-            return "Payments are made directly to the seller's UPI ID, which is shown at checkout. Navrose does not process payments directly.";
-        }
-        if (lowerInput.includes('hello') || lowerInput.includes('hi') || lowerInput.includes('hey')) {
-            return "Hello! How can I assist you?";
-        }
-
-        return "I'm sorry, I couldn't understand that. For more specific questions, please " + adminContactLink + ". Our team will be happy to assist you.";
-    };
-
-    const handleSendMessage = (e) => {
-        e.preventDefault();
-        const trimmedInput = inputValue.trim();
-        if (!trimmedInput) return;
-
-        const userMessage = { sender: 'user', text: trimmedInput };
-        setMessages(prev => [...prev, userMessage]);
-        setInputValue('');
-
-        setTimeout(() => {
-            const botResponseText = generateBotResponse(trimmedInput);
-            const botMessage = { sender: 'bot', text: botResponseText };
-            setMessages(prev => [...prev, botMessage]);
-        }, 500); // Simulate bot "thinking"
-    };
-
-    if (!show) return null;
-
-    return (
-        <div className="modal-overlay chatbot-modal-overlay">
-            <div className="modal-content chatbot-modal-content">
-                <div className="chatbot-header">
-                    <h3>Navrose Support</h3>
-                    <button className="modal-close-btn" onClick={onClose}>&times;</button>
-                </div>
-                <div className="chatbot-messages">
-                    {messages.map((msg, index) => (
-                        <div key={index} className={`message-bubble-wrapper ${msg.sender}-wrapper`}>
-                           <div className={`message-bubble ${msg.sender}-message`}>
-                                <span dangerouslySetInnerHTML={{ __html: msg.text }}></span>
-                           </div>
-                        </div>
-                    ))}
-                    <div ref={messagesEndRef} />
-                </div>
-                <form className="chatbot-input-area" onSubmit={handleSendMessage}>
-                    <input
-                        type="text"
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        placeholder="Type your message..."
-                        autoFocus
-                    />
-                    <button type="submit">Send</button>
-                </form>
-            </div>
-        </div>
-    );
-};
-
 // --- HEADER & NAVIGATION ---
-const Header = ({ currentUser, onLogout, setView, onShowLogin, cartItemCount, onShowCart, onShowChat }) => {
+const Header = ({ currentUser, onLogout, setView, onShowLogin, cartItemCount, onShowCart }) => {
     const [menuOpen, setMenuOpen] = useState(false);
     const [notificationsOpen, setNotificationsOpen] = useState(false);
     const [notifications, setNotifications] = useState([]);
@@ -1173,12 +1033,11 @@ const Header = ({ currentUser, onLogout, setView, onShowLogin, cartItemCount, on
         }
         const unsub = db.collection('notifications')
             .where('userId', '==', currentUser.mobile)
-            .limit(10)
             .onSnapshot(snapshot => {
                 const notifs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                // Client-side sort to ensure newest appear first
+                // Client-side sorting and limiting to avoid index error
                 notifs.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-                setNotifications(notifs);
+                setNotifications(notifs.slice(0, 10));
             }, err => {
                 console.error("Error in notification listener:", err);
             });
@@ -1200,16 +1059,26 @@ const Header = ({ currentUser, onLogout, setView, onShowLogin, cartItemCount, on
     };
     
     const handleOpenNotifications = () => {
-        setNotificationsOpen(prev => !prev);
-        if (!notificationsOpen) { // Only mark as read when opening
-            const unreadIds = notifications.filter(n => !n.read).map(n => n.id);
-            if (unreadIds.length > 0) {
+        const willBeOpen = !notificationsOpen;
+        setNotificationsOpen(willBeOpen);
+
+        if (willBeOpen) {
+            const unreadNotifications = notifications.filter(n => !n.read);
+            if (unreadNotifications.length > 0) {
+                // Optimistic UI update for instant feedback
+                const updatedNotifications = notifications.map(n => n.read ? n : { ...n, read: true });
+                setNotifications(updatedNotifications);
+                
+                // Update in Firestore in the background
                 const batch = db.batch();
-                unreadIds.forEach(id => {
-                    const docRef = db.collection('notifications').doc(id);
+                unreadNotifications.forEach(n => {
+                    const docRef = db.collection('notifications').doc(n.id);
                     batch.update(docRef, { read: true });
                 });
-                batch.commit().catch(err => console.error("Error marking notifications as read:", err));
+                batch.commit().catch(err => {
+                    console.error("Error marking notifications as read:", err);
+                    // Firestore listener will eventually correct the state if this fails
+                });
             }
         }
     };
@@ -1227,38 +1096,9 @@ const Header = ({ currentUser, onLogout, setView, onShowLogin, cartItemCount, on
                     <button className="header-icon-btn" title="Home" onClick={() => setView('home')}>
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"></path></svg>
                     </button>
-                     <button className="header-icon-btn" title="Flash Offers" onClick={() => setView('flashOffers')}>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2v11h3v9l7-12h-4l4-8z"></path></svg>
-                    </button>
                     <button className="header-icon-btn cart-btn" title="Cart" onClick={onShowCart}>
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"></path></svg>
                         {cartItemCount > 0 && <span className="cart-badge">{cartItemCount}</span>}
-                    </button>
-                    <div className="notification-container" ref={notificationRef}>
-                        <button className="header-icon-btn" title="Notifications" onClick={handleOpenNotifications}>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"></path></svg>
-                            {unreadCount > 0 && <span className="cart-badge">{unreadCount}</span>}
-                        </button>
-                        {notificationsOpen && (
-                            <div className="dropdown-menu notification-dropdown">
-                                <div className="dropdown-header">Notifications</div>
-                                {notifications.length > 0 ? (
-                                    notifications.map(n => (
-                                        <a key={n.id} onClick={() => handleNotificationClick(n)} className={`notification-item ${!n.read ? 'unread' : ''}`}>
-                                            <span className="notification-message">{n.message}</span>
-                                            <span className="notification-time">
-                                                {n.createdAt?.toDate().toLocaleString()}
-                                            </span>
-                                        </a>
-                                    ))
-                                ) : (
-                                    <div className="no-notifications">No new notifications</div>
-                                )}
-                            </div>
-                        )}
-                    </div>
-                     <button className="header-icon-btn" title="Chat" onClick={onShowChat}>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"></path></svg>
                     </button>
                     
                     {currentUser ? (
@@ -1286,8 +1126,33 @@ const Header = ({ currentUser, onLogout, setView, onShowLogin, cartItemCount, on
                             )}
                         </div>
                     ) : (
-                        <button className="btn-primary" onClick={onShowLogin}>Login / Sign Up</button>
+                         <button className="btn-primary" onClick={onShowLogin}>Login / Sign Up</button>
                     )}
+
+                    <div className="notification-container" ref={notificationRef}>
+                        <button className="header-icon-btn" title="Notifications" onClick={handleOpenNotifications}>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"></path></svg>
+                            {unreadCount > 0 && <span className="cart-badge">{unreadCount}</span>}
+                        </button>
+                        {notificationsOpen && (
+                            <div className="dropdown-menu notification-dropdown">
+                                <div className="dropdown-header">Notifications</div>
+                                {notifications.length > 0 ? (
+                                    notifications.map(n => (
+                                        <a key={n.id} onClick={() => handleNotificationClick(n)} className={`notification-item ${!n.read ? 'unread' : ''}`}>
+                                            <span className="notification-message">{n.message}</span>
+                                            <span className="notification-time">
+                                                {n.createdAt?.toDate().toLocaleString()}
+                                            </span>
+                                        </a>
+                                    ))
+                                ) : (
+                                    <div className="no-notifications">No new notifications</div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+
                 </div>
             </div>
         </header>
@@ -1402,56 +1267,148 @@ const OfferCard = ({ offer }) => (
 
 // --- SLIDER COMPONENTS ---
 const ProductSlider = ({ items, onAddToCart, type, title }) => {
-    const trackRef = useRef(null);
+    const sliderRef = useRef(null);
+    const intervalRef = useRef(null);
+    const [isHovered, setIsHovered] = useState(false);
+
+    if (!items || items.length === 0) return null;
+
+    const duplicatedItems = useMemo(() => [...items, ...items], [items]);
+
     const scroll = (direction) => {
-        if (trackRef.current) {
-            const scrollAmount = trackRef.current.offsetWidth * 0.8;
-            trackRef.current.scrollLeft += direction === 'next' ? scrollAmount : -scrollAmount;
+        const slider = sliderRef.current;
+        if (slider) {
+            const scrollAmount = 220 + 24; // 220px width + 1.5rem (24px) margin
+            slider.scrollLeft += direction === 'right' ? scrollAmount : -scrollAmount;
         }
     };
 
-    if (!items || items.length === 0) return null;
+    const startAutoScroll = () => {
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        intervalRef.current = setInterval(() => {
+            const slider = sliderRef.current;
+            if (slider) {
+                if (slider.scrollLeft >= slider.scrollWidth / 2) {
+                    slider.scrollLeft = 0;
+                }
+                slider.scrollLeft += 1;
+            }
+        }, 25);
+    };
+
+    const stopAutoScroll = () => {
+        if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+        }
+    };
+
+    useEffect(() => {
+        if (!isHovered) {
+            startAutoScroll();
+        } else {
+            stopAutoScroll();
+        }
+        return () => stopAutoScroll();
+    }, [isHovered, items]);
+
 
     return (
         <section className="category-section">
             <h2>{title}</h2>
-            <div className="slider-container">
-                <button className="slider-btn prev" onClick={() => scroll('prev')}>&#10094;</button>
-                <div className="slider-track" ref={trackRef}>
-                    {items.map(item => (
-                        <div className="slider-item" key={`${type}-${item.id}`}>
+            <div 
+                className="slider-container" 
+                ref={sliderRef}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+            >
+                <button className="slider-nav-btn left" onClick={() => scroll('left')} aria-label="Scroll Left">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path></svg>
+                </button>
+                <div className="slider-track" style={{scrollBehavior: 'smooth'}}>
+                    {duplicatedItems.map((item, index) => (
+                        <div className="slider-item" key={`${type}-${item.id}-${index}`}>
                             <ProductCard item={item} onAddToCart={onAddToCart} />
                         </div>
                     ))}
                 </div>
-                <button className="slider-btn next" onClick={() => scroll('next')}>&#10095;</button>
+                 <button className="slider-nav-btn right" onClick={() => scroll('right')} aria-label="Scroll Right">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg>
+                </button>
             </div>
         </section>
     );
 };
 
 const OfferSlider = ({ offers, title }) => {
-    const trackRef = useRef(null);
+    const sliderRef = useRef(null);
+    const intervalRef = useRef(null);
+    const [isHovered, setIsHovered] = useState(false);
+
+    if (!offers || offers.length === 0) return null;
+
+    const duplicatedOffers = useMemo(() => [...offers, ...offers], [offers]);
+    
     const scroll = (direction) => {
-        if (trackRef.current) {
-            const scrollAmount = trackRef.current.offsetWidth * 0.8;
-            trackRef.current.scrollLeft += direction === 'next' ? scrollAmount : -scrollAmount;
+        const slider = sliderRef.current;
+        if (slider) {
+            const scrollAmount = 220 + 24; // 220px width + 1.5rem (24px) margin
+            slider.scrollLeft += direction === 'right' ? scrollAmount : -scrollAmount;
         }
     };
-    if (!offers || offers.length === 0) return null;
+
+    const startAutoScroll = () => {
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        intervalRef.current = setInterval(() => {
+            const slider = sliderRef.current;
+            if (slider) {
+                if (slider.scrollLeft >= slider.scrollWidth / 2) {
+                    slider.scrollLeft = 0;
+                }
+                slider.scrollLeft += 1;
+            }
+        }, 25);
+    };
+
+    const stopAutoScroll = () => {
+        if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+        }
+    };
+
+    useEffect(() => {
+        if (!isHovered) {
+            startAutoScroll();
+        } else {
+            stopAutoScroll();
+        }
+        return () => stopAutoScroll();
+    }, [isHovered, offers]);
+
+
     return (
         <section className="category-section">
             <h2>{title}</h2>
-            <div className="slider-container">
-                <button className="slider-btn prev" onClick={() => scroll('prev')}>&#10094;</button>
-                <div className="slider-track" ref={trackRef}>
-                    {offers.map(offer => (
-                        <div className="slider-item" key={`offer-${offer.id}`}>
+            <div 
+                className="slider-container" 
+                ref={sliderRef}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+            >
+                <button className="slider-nav-btn left" onClick={() => scroll('left')} aria-label="Scroll Left">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path></svg>
+                </button>
+                <div className="slider-track" style={{scrollBehavior: 'smooth'}}>
+                     {duplicatedOffers.map((offer, index) => (
+                        <div className="slider-item" key={`offer-${offer.id}-${index}`}>
                             <OfferCard offer={offer} />
                         </div>
                     ))}
                 </div>
-                <button className="slider-btn next" onClick={() => scroll('next')}>&#10095;</button>
+                <button className="slider-nav-btn right" onClick={() => scroll('right')} aria-label="Scroll Right">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg>
+                </button>
             </div>
         </section>
     );
@@ -1459,7 +1416,7 @@ const OfferSlider = ({ offers, title }) => {
 
 
 // --- VIEWS / PAGES ---
-const HomePage = ({ onAddToCart }) => {
+const HomePage = ({ onAddToCart, currentUser }) => {
     const [ads, setAds] = useState([]);
     const [boosterOffers, setBoosterOffers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -1467,12 +1424,16 @@ const HomePage = ({ onAddToCart }) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Fetch ads without server-side ordering to prevent index errors
-                const adsSnap = await db.collection('ads').where('status', '==', 'approved').limit(10).get();
-                const adsData = adsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                // Sort client-side
+                const adsSnap = await db.collection('ads').where('status', '==', 'approved').limit(20).get();
+                let adsData = adsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                // Filter out the current user's own ads
+                if (currentUser && currentUser.mobile) {
+                    adsData = adsData.filter(ad => ad.user !== currentUser.mobile);
+                }
+
                 adsData.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-                setAds(adsData);
+                setAds(adsData.slice(0, 10)); // Then take the top 10 for display
                 
                 const boosterSnap = await db.collection('boosterOffers').orderBy('createdAt', 'desc').limit(8).get();
                 setBoosterOffers(boosterSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
@@ -1484,7 +1445,7 @@ const HomePage = ({ onAddToCart }) => {
             }
         };
         fetchData();
-    }, []);
+    }, [currentUser]);
 
     if (loading) return <LoadingSpinner />;
 
@@ -1496,46 +1457,8 @@ const HomePage = ({ onAddToCart }) => {
     );
 };
 
-const FlashOffersPage = () => {
-    const [offers, setOffers] = useState([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchOffers = async () => {
-            try {
-                const boosterSnap = await db.collection('boosterOffers')
-                    .orderBy('createdAt', 'desc')
-                    .get();
-                setOffers(boosterSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-            } catch (error) {
-                console.error("Error fetching flash offers:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchOffers();
-    }, []);
-
-    if (loading) return <LoadingSpinner />;
-
-    return (
-        <main className="main-content">
-            <section className="category-section">
-                <h2>Flash Offers</h2>
-                {offers.length > 0 ? (
-                     <div className="product-grid">
-                        {offers.map((offer) => <OfferCard key={offer.id} offer={offer} />)}
-                    </div>
-                ) : (
-                    <p>No flash offers available at the moment. Stay tuned!</p>
-                )}
-            </section>
-        </main>
-    );
-};
-
-
-const PostAdPage = ({ currentUser, onAdPosted, showToast }) => {
+const PostAdPage = ({ currentUser, showToast }) => {
+    // Form state
     const [title, setTitle] = useState('');
     const [price, setPrice] = useState('');
     const [imageBase64, setImageBase64] = useState(null);
@@ -1544,6 +1467,87 @@ const PostAdPage = ({ currentUser, onAdPosted, showToast }) => {
     const [promoIsActive, setPromoIsActive] = useState(true);
     const [loading, setLoading] = useState(false);
     
+    // Item management state
+    const [myAds, setMyAds] = useState([]);
+    const [loadingAds, setLoadingAds] = useState(true);
+    const [editingAd, setEditingAd] = useState(null);
+
+    // Fetch user's ads for the management section
+    const fetchUserAds = async () => {
+        if (!currentUser || !currentUser.mobile) {
+            setLoadingAds(false);
+            return;
+        }
+        setLoadingAds(true);
+        try {
+            const snapshot = await db.collection('ads')
+                .where('user', '==', currentUser.mobile)
+                .get();
+            const adsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            // Client-side sorting to avoid index error
+            adsData.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+            setMyAds(adsData);
+        } catch (error) {
+            console.error("Error fetching user ads: ", error);
+            showToast('Could not load your items.', 'error');
+        } finally {
+            setLoadingAds(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchUserAds();
+    }, [currentUser]);
+
+    // Effect to populate form when editing an ad
+    useEffect(() => {
+        if (editingAd) {
+            setTitle(editingAd.title || '');
+            setPrice(editingAd.price || '');
+            setImageBase64(editingAd.imageBase64 || null);
+            setPromoCode(editingAd.promoCode?.code || '');
+            setPromoDiscount(editingAd.promoCode?.discountPercent || '');
+            setPromoIsActive(editingAd.promoCode?.isActive !== false);
+        } else {
+            // Reset form when not editing
+            setTitle('');
+            setPrice('');
+            setImageBase64(null);
+            setPromoCode('');
+            setPromoDiscount('');
+            setPromoIsActive(true);
+        }
+    }, [editingAd]);
+
+    const handleFileChange = async (e) => {
+        if (e.target.files && e.target.files[0]) {
+            const base64 = await compressImageToBase64(e.target.files[0]);
+            setImageBase64(base64);
+        }
+    };
+
+    const handleEdit = (ad) => {
+        setEditingAd(ad);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handleCancelEdit = () => {
+        setEditingAd(null);
+    };
+
+    const handleDelete = async (adId) => {
+        if (window.confirm('Are you sure you want to delete this item? This action cannot be undone.')) {
+            try {
+                await db.collection('ads').doc(adId).delete();
+                showToast('Item deleted successfully!', 'success');
+                fetchUserAds();
+            } catch (error) {
+                console.error("Error deleting ad: ", error);
+                showToast('Failed to delete item.', 'error');
+            }
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -1553,8 +1557,7 @@ const PostAdPage = ({ currentUser, onAdPosted, showToast }) => {
                 price: Number(price),
                 imageBase64,
                 user: currentUser.mobile,
-                status: 'pending',
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                status: 'pending', // Always requires re-approval
                 promoCode: {
                     code: promoCode,
                     discountPercent: Number(promoDiscount) || 0,
@@ -1562,28 +1565,34 @@ const PostAdPage = ({ currentUser, onAdPosted, showToast }) => {
                 }
             };
 
-            await db.collection('ads').add(adData);
-            showToast('Ad submitted for approval!','success');
-            onAdPosted();
+            if (editingAd) {
+                await db.collection('ads').doc(editingAd.id).update({
+                    ...adData,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                showToast('Item updated successfully! It will be reviewed again.', 'success');
+                setEditingAd(null);
+            } else {
+                await db.collection('ads').add({
+                    ...adData,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                });
+                showToast('Ad submitted for approval!', 'success');
+            }
+            
+            fetchUserAds(); // Refresh list after any submission
         } catch (error) {
-            console.error("Error posting ad: ", error);
-            showToast('Failed to post ad.', 'error');
+            console.error("Error submitting ad: ", error);
+            showToast(editingAd ? 'Failed to update item.' : 'Failed to post ad.', 'error');
         } finally {
             setLoading(false);
         }
     };
     
-    const handleFileChange = async (e) => {
-        if (e.target.files && e.target.files[0]) {
-            const base64 = await compressImageToBase64(e.target.files[0]);
-            setImageBase64(base64);
-        }
-    };
-
     return (
         <main className="main-content">
             <div className="form-container">
-                <h2>{currentUser.role === 'seller' ? 'Sell a New Item' : 'Post a New Ad'}</h2>
+                <h2>{editingAd ? 'Edit Your Item' : (currentUser.role === 'seller' ? 'Sell a New Item' : 'Post a New Ad')}</h2>
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label>Item Title</label>
@@ -1595,7 +1604,7 @@ const PostAdPage = ({ currentUser, onAdPosted, showToast }) => {
                     </div>
                     <div className="form-group">
                         <label>Image</label>
-                        <input type="file" accept="image/*" onChange={handleFileChange} required />
+                        <input type="file" accept="image/*" onChange={handleFileChange} required={!editingAd} />
                         {imageBase64 && <img src={imageBase64} alt="Preview" className="image-preview" />}
                     </div>
                     
@@ -1620,9 +1629,39 @@ const PostAdPage = ({ currentUser, onAdPosted, showToast }) => {
                             </div>
                         </div>
                     )}
-
-                    <button type="submit" className="btn-primary" disabled={loading} style={{width: '100%', marginTop: '1.5rem'}}>{loading ? 'Submitting...' : 'Submit for Approval'}</button>
+                    
+                    <div style={{display: 'flex', gap: '1rem', marginTop: '1.5rem'}}>
+                        <button type="submit" className="btn-primary" disabled={loading} style={{width: '100%'}}>
+                            {loading ? 'Submitting...' : (editingAd ? 'Update Item' : 'Submit for Approval')}
+                        </button>
+                        {editingAd && (
+                             <button type="button" onClick={handleCancelEdit} className="btn-secondary" style={{width: '100%', backgroundColor: 'var(--text-color-light)'}}>
+                                Cancel Edit
+                            </button>
+                        )}
+                    </div>
                 </form>
+            </div>
+
+            <div className="list-container" style={{maxWidth: '600px', margin: '3rem auto'}}>
+                <h3 style={{textAlign: 'center', color: 'var(--primary-color)'}}>Your Item Management</h3>
+                {loadingAds ? <p style={{textAlign: 'center'}}>Loading your items...</p> : (
+                    myAds.length === 0 ? <p style={{textAlign: 'center', color: 'var(--text-color-light)'}}>You haven't posted any items yet.</p> :
+                        myAds.map(ad => (
+                            <div key={ad.id} className="list-item">
+                                <img src={ad.imageBase64 || 'https://via.placeholder.com/100'} alt={ad.title} />
+                                <div className="item-details">
+                                    <h4>{ad.title}</h4>
+                                    <p>Price: ₹{ad.price}</p>
+                                </div>
+                                <span className={`status-badge status-${ad.status}`}>{ad.status}</span>
+                                <div className="item-actions">
+                                    <button className="btn-secondary" style={{backgroundColor: 'var(--info-color)', padding: '0.5rem 1rem'}} onClick={() => handleEdit(ad)}>Edit</button>
+                                    <button className="btn-secondary" style={{backgroundColor: 'var(--danger-color)', padding: '0.5rem 1rem'}} onClick={() => handleDelete(ad.id)}>Delete</button>
+                                </div>
+                            </div>
+                        ))
+                )}
             </div>
         </main>
     );
@@ -1843,43 +1882,49 @@ const MySalesPage = ({ currentUser, showToast, onViewProof }) => { // Seller's v
                 {sales.length === 0 ? (
                     <p>You have no sales yet.</p>
                 ) : (
-                    sales.map(order => (
-                        <div key={order.id} className="order-list-item">
-                            <div className="order-header">
-                                <div>
-                                    <h4>Order ID: {order.id.substring(0, 8).toUpperCase()}</h4>
-                                    <p>Buyer: {order.buyerId}</p>
-                                     <p>Placed on: {order.createdAt?.toDate().toLocaleDateString()}</p>
+                    sales.map(order => {
+                        const priceAfterDiscount = (order.subtotal || 0) - (order.discountAmount || 0);
+                        const netEarnings = priceAfterDiscount - (order.sellerBrokerageFee || 0);
+                        return (
+                            <div key={order.id} className="order-list-item">
+                                <div className="order-header">
+                                    <div>
+                                        <h4>Order ID: {order.id.substring(0, 8).toUpperCase()}</h4>
+                                        <p>Buyer: {order.buyerId}</p>
+                                        <p>Placed on: {order.createdAt?.toDate().toLocaleDateString()}</p>
+                                    </div>
+                                    <div className="order-summary">
+                                        <span className={`status-badge status-${order.status}`}>{order.status.replace('_', ' ')}</span>
+                                        <p style={{ margin: '0.25rem 0', fontSize: '0.9rem', color: 'var(--text-color-light)' }}>Buyer Paid: ₹{(order.totalAmount || 0).toFixed(2)}</p>
+                                        <p style={{ margin: '0.25rem 0', fontSize: '0.9rem', color: 'var(--danger-color)' }}>Platform Fee: - ₹{(order.sellerBrokerageFee || 0).toFixed(2)}</p>
+                                        <p className="order-total" style={{ marginTop: '0.5rem' }}>Your Earnings: ₹{netEarnings.toFixed(2)}</p>
+                                    </div>
                                 </div>
-                                <div className="order-summary">
-                                    <span className={`status-badge status-${order.status}`}>{order.status.replace('_', ' ')}</span>
-                                    <p className="order-total">Total: ₹{(order.totalAmount || 0).toFixed(2)}</p>
+                                <ul className="order-items">
+                                    {(order.items || []).map((item, index) => (
+                                        <li key={index} className="order-item-detail">
+                                            <span>{item.title} (x{item.quantity})</span>
+                                            <span>₹{(item.price * item.quantity).toFixed(2)}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                                <div className="seller-actions">
+                                    <span>Update Status:</span>
+                                    <select 
+                                    value={order.status} 
+                                    onChange={(e) => handleStatusUpdate(order.id, e.target.value, order.buyerId)}
+                                    >
+                                        {statusOptions.map(s => <option key={s} value={s}>{s.replace('_', ' ')}</option>)}
+                                    </select>
+                                    <a href={`https://wa.me/${(order.buyerId || '').replace('+', '')}`} target="_blank" rel="noopener noreferrer" className="btn-whatsapp">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21h.01c5.46 0 9.91-4.45 9.91-9.91s-4.45-9.91-9.91-9.91zM17.18 15.4c-.28-.14-1.65-.81-1.9-.91-.25-.09-.44-.14-.62.14-.18.28-.72.91-.88 1.1-.16.18-.32.21-.59.06-.28-.14-1.17-.43-2.23-1.38-.83-.74-1.39-1.65-1.55-1.93-.16-.28-.02-.43.12-.57.13-.13.28-.32.41-.48.14-.16.18-.28.28-.46.09-.18.05-.37-.02-.51s-.62-1.5-.85-2.05c-.22-.55-.45-.48-.62-.48-.16 0-.35-.02-.53-.02s-.47.07-.72.35c-.25.28-.96.93-1.18 2.25-.22 1.32.74 2.6 1.46 3.73.72 1.13 2.35 2.8 5.78 3.6.86.21 1.54.34 2.08.43.79.14 1.5.12 2.07-.07.63-.21 1.65-.68 1.88-1.33.24-.65.24-1.21.16-1.33-.07-.14-.26-.22-.53-.36z"></path></svg>
+                                        Chat with Buyer
+                                    </a>
+                                    {order.paymentProofImage && <button className="btn-primary" onClick={() => onViewProof(order.paymentProofImage)}>View Proof</button>}
                                 </div>
                             </div>
-                             <ul className="order-items">
-                                {(order.items || []).map((item, index) => (
-                                    <li key={index} className="order-item-detail">
-                                        <span>{item.title} (x{item.quantity})</span>
-                                        <span>₹{(item.price * item.quantity).toFixed(2)}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                            <div className="seller-actions">
-                                <span>Update Status:</span>
-                                <select 
-                                  value={order.status} 
-                                  onChange={(e) => handleStatusUpdate(order.id, e.target.value, order.buyerId)}
-                                >
-                                    {statusOptions.map(s => <option key={s} value={s}>{s.replace('_', ' ')}</option>)}
-                                </select>
-                                <a href={`https://wa.me/${(order.buyerId || '').replace('+', '')}`} target="_blank" rel="noopener noreferrer" className="btn-whatsapp">
-                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21h.01c5.46 0 9.91-4.45 9.91-9.91s-4.45-9.91-9.91-9.91zM17.18 15.4c-.28-.14-1.65-.81-1.9-.91-.25-.09-.44-.14-.62.14-.18.28-.72.91-.88 1.1-.16.18-.32.21-.59.06-.28-.14-1.17-.43-2.23-1.38-.83-.74-1.39-1.65-1.55-1.93-.16-.28-.02-.43.12-.57.13-.13.28-.32.41-.48.14-.16.18-.28.28-.46.09-.18.05-.37-.02-.51s-.62-1.5-.85-2.05c-.22-.55-.45-.48-.62-.48-.16 0-.35-.02-.53-.02s-.47.07-.72.35c-.25.28-.96.93-1.18 2.25-.22 1.32.74 2.6 1.46 3.73.72 1.13 2.35 2.8 5.78 3.6.86.21 1.54.34 2.08.43.79.14 1.5.12 2.07-.07.63-.21 1.65-.68 1.88-1.33.24-.65.24-1.21.16-1.33-.07-.14-.26-.22-.53-.36z"></path></svg>
-                                    Chat with Buyer
-                                </a>
-                                {order.paymentProofImage && <button className="btn-primary" onClick={() => onViewProof(order.paymentProofImage)}>View Proof</button>}
-                            </div>
-                        </div>
-                    ))
+                        )
+                    })
                 )}
             </div>
         </main>
@@ -1887,7 +1932,7 @@ const MySalesPage = ({ currentUser, showToast, onViewProof }) => { // Seller's v
 };
 
 
-const CartPage = ({ cart, onUpdateQuantity, onRemove, onConfirm, onCancel, isSubmitting, currentUser, brokerageSettings, showToast }) => {
+const CartPage = ({ cart, onUpdateQuantity, onRemove, onClearCart, onConfirm, onCancel, isSubmitting, currentUser, brokerageSettings, showToast }) => {
     const [promoCodeInput, setPromoCodeInput] = useState('');
     const [appliedPromo, setAppliedPromo] = useState(null);
 
@@ -1909,8 +1954,8 @@ const CartPage = ({ cart, onUpdateQuantity, onRemove, onConfirm, onCancel, isSub
 
     const buyerBrokerageFee = useMemo(() => {
         if (!currentUser || !brokerageSettings) return 0;
-        const plan = currentUser.brokeragePlan || 'normal';
-        const rate = brokerageSettings[plan] || 0;
+        // All buyers are charged the 'buyer' platform fee rate, regardless of their plan.
+        const rate = brokerageSettings['buyer'] || 0;
         return priceAfterDiscount * (rate / 100);
     }, [currentUser, brokerageSettings, priceAfterDiscount]);
     
@@ -1946,12 +1991,21 @@ const CartPage = ({ cart, onUpdateQuantity, onRemove, onConfirm, onCancel, isSub
         });
     };
 
+    const handleClearCart = () => {
+        if (window.confirm('Are you sure you want to remove all items from your cart?')) {
+            onClearCart();
+        }
+    };
+
     return (
         <div className="modal-overlay">
             <div className="cart-modal-content">
                 <div className="cart-header">
                     <h2>Your Cart</h2>
-                    <button className="modal-close-btn" onClick={onCancel}>&times;</button>
+                    <div className="cart-header-actions">
+                        {cart.length > 0 && <button className="btn-remove" onClick={handleClearCart}>Clear Cart</button>}
+                        <button className="modal-close-btn" onClick={onCancel}>&times;</button>
+                    </div>
                 </div>
                 {cart.length === 0 ? (
                     <p className="empty-cart-message">Your cart is empty.</p>
@@ -2034,7 +2088,6 @@ const App = () => {
     const [actionQueue, setActionQueue] = useState(null);
     const [cart, setCart] = useState([]);
     const [showCart, setShowCart] = useState(false);
-    const [showChatbot, setShowChatbot] = useState(false);
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [orderConfirmation, setOrderConfirmation] = useState({ show: false, message: '' });
@@ -2080,6 +2133,40 @@ const App = () => {
 
     }, []);
     
+    // Effect to manage cart persistence based on user session
+    useEffect(() => {
+        if (currentUser && currentUser.mobile) {
+            // User is logged in, load their cart from localStorage
+            try {
+                const storedCart = localStorage.getItem(`navroseCart_${currentUser.mobile}`);
+                if (storedCart) {
+                    setCart(JSON.parse(storedCart));
+                } else {
+                    setCart([]); // No cart stored for this user, start with an empty one
+                }
+            } catch (error) {
+                console.error("Failed to load cart from localStorage", error);
+                setCart([]);
+            }
+        } else {
+            // User is logged out, clear the cart state
+            setCart([]);
+        }
+    }, [currentUser]); // This logic runs whenever a user logs in or out
+
+    // Effect to save the cart to localStorage whenever it changes
+    useEffect(() => {
+        if (currentUser && currentUser.mobile) {
+            // Only save the cart if a user is logged in
+            localStorage.setItem(`navroseCart_${currentUser.mobile}`, JSON.stringify(cart));
+        } else if (!currentUser) {
+             // If user logs out, we should ensure their cart is not in localStorage
+             // This is handled by the other useEffect, but as a safeguard we can clear all carts
+             // A better approach is user-specific keys which is already implemented.
+        }
+    }, [cart, currentUser]); // This runs whenever the cart or user changes
+
+
     const showToast = (message, type = 'success') => {
         setToast({ show: true, message, type });
     };
@@ -2088,16 +2175,22 @@ const App = () => {
     };
 
     const handleLogout = () => {
+        const userMobile = currentUser?.mobile;
+        if (userMobile) {
+            // Optional: remove cart from local storage on logout
+            // localStorage.removeItem(`navroseCart_${userMobile}`);
+        }
         localStorage.removeItem('navroseUser');
         setCurrentUser(null);
         setView('home');
+        setCart([]); // Explicitly clear cart state on logout
     };
     
     const handleLoginSuccess = async (user, successMessage) => {
         // Fetch latest user data to get brokeragePlan
         const userRef = db.collection('users').doc(user.mobile);
         const userDoc = await userRef.get();
-        const latestUserData = userDoc.exists ? userDoc.data() : user;
+        const latestUserData = userDoc.exists ? {id: userDoc.id, ...userDoc.data()} : user;
 
         localStorage.setItem('navroseUser', JSON.stringify(latestUserData));
         setCurrentUser(latestUserData);
@@ -2140,6 +2233,12 @@ const App = () => {
 
     const handleRemoveFromCart = (itemId) => {
         setCart(prevCart => prevCart.filter(item => item.id !== itemId));
+    };
+
+    const handleClearCart = () => {
+        setCart([]);
+        localStorage.removeItem(`navroseCart_${currentUser.mobile}`);
+        showToast('Cart has been cleared.', 'info');
     };
 
     const handleConfirmOrder = async (orderSummary) => {
@@ -2210,7 +2309,7 @@ const App = () => {
             });
 
             // Success
-            setCart([]);
+            handleClearCart();
             setShowPaymentModal(false);
             setPendingOrder(null);
             setOrderConfirmation({ show: true, message: 'Your order has been submitted! The seller will verify your payment and confirm.' });
@@ -2225,13 +2324,12 @@ const App = () => {
 
     const renderView = () => {
         switch (view) {
-            case 'sellItem': return <PostAdPage currentUser={currentUser} onAdPosted={() => setView('myAds')} showToast={showToast} />;
+            case 'sellItem': return <PostAdPage currentUser={currentUser} showToast={showToast} />;
             case 'mySellerProfile': return <MySellerProfilePage currentUser={currentUser} onProfileUpdated={handleProfileUpdated} showToast={showToast} />;
             case 'myAds': return <MyAdsPage currentUser={currentUser} />;
             case 'myOrders': return <MyOrdersPage currentUser={currentUser} onViewProof={setViewingProof} />;
             case 'mySales': return <MySalesPage currentUser={currentUser} showToast={showToast} onViewProof={setViewingProof} />;
-            case 'flashOffers': return <FlashOffersPage />;
-            default: return <HomePage onAddToCart={handleAddToCart} />;
+            default: return <HomePage onAddToCart={handleAddToCart} currentUser={currentUser} />;
         }
     };
     
@@ -2248,12 +2346,21 @@ const App = () => {
                 onShowLogin={() => setShowLogin(true)}
                 cartItemCount={cart.length}
                 onShowCart={() => setShowCart(true)}
-                onShowChat={() => setShowChatbot(true)}
             />
             {renderView()}
             {showLogin && <LoginPage onLoginSuccess={handleLoginSuccess} onCancel={() => {setShowLogin(false); setActionQueue(null);}} showToast={showToast} />}
-            {showCart && <CartPage cart={cart} onUpdateQuantity={handleUpdateCartQuantity} onRemove={handleRemoveFromCart} onConfirm={handleConfirmOrder} onCancel={() => setShowCart(false)} isSubmitting={isSubmitting} currentUser={currentUser} brokerageSettings={brokerageSettings} showToast={showToast} />}
-            {showChatbot && <ChatbotModal show={showChatbot} onClose={() => setShowChatbot(false)} />}
+            {showCart && <CartPage 
+                cart={cart} 
+                onUpdateQuantity={handleUpdateCartQuantity} 
+                onRemove={handleRemoveFromCart} 
+                onClearCart={handleClearCart}
+                onConfirm={handleConfirmOrder} 
+                onCancel={() => setShowCart(false)} 
+                isSubmitting={isSubmitting} 
+                currentUser={currentUser} 
+                brokerageSettings={brokerageSettings} 
+                showToast={showToast} 
+            />}
             {showPaymentModal && <PaymentModal show={showPaymentModal} onCancel={() => setShowPaymentModal(false)} orderSummary={pendingOrder} onSubmit={handleSubmitOrderWithProof} isSubmitting={isSubmitting} sellerUpiId={sellerUpiForPayment} />}
             <OrderConfirmationModal show={orderConfirmation.show} message={orderConfirmation.message} onClose={() => setOrderConfirmation({ show: false, message: '' })} />
             <ImageModal src={viewingProof} onClose={() => setViewingProof(null)} />
