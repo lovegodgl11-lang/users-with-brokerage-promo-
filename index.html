@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" class=""><head><script>window.livecodes = window.livecodes || {};</script><title>User with brokerage </title><meta name="title" content="User with brokerage "><meta name="description" content="Paid plan"><meta charset="UTF-8">
+<html lang="en" class=""><head><script>window.livecodes = window.livecodes || {};</script><title>Users with brokerage </title><meta name="title" content="Users with brokerage "><meta name="description" content="Inventory management add"><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="stylesheet" href="./style.css"><script src="https://cdn.jsdelivr.net/npm/es-module-shims@1.10.0/dist/es-module-shims.js" async=""></script><script type="importmap">{
   "imports": {}
 }</script></head><body>
-
 
 
     <meta charset="UTF-8">
@@ -368,6 +367,10 @@ body {
 }
 .btn-secondary:hover {
     background-color: #45a049;
+}
+.btn-secondary:disabled {
+    background-color: var(--text-color-light);
+    cursor: not-allowed;
 }
 
 /* --- FORMS --- */
@@ -824,6 +827,60 @@ body {
     gap: 0.5rem;
 }
 
+/* --- LEDGER & REPORTS --- */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+.kpi-card {
+    background-color: var(--card-background);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    box-shadow: var(--box-shadow);
+    border: 1px solid var(--border-color);
+}
+.kpi-card h4 {
+    margin: 0 0 0.5rem;
+    color: var(--text-color-light);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+.kpi-card p {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+.table-container {
+    overflow-x: auto;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background-color: var(--card-background);
+    margin-top: 2rem;
+}
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.data-table th, .data-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+.data-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+.data-table tr:last-child td {
+    border-bottom: none;
+}
+.data-table td:last-child, .data-table th:last-child {
+    text-align: right;
+}
+
 @media (max-width: 768px) {
     .header-content { padding: 0 0.5rem; }
     .header-actions { gap: 0.25rem; }
@@ -993,7 +1050,7 @@ const PaymentModal = ({ show, onCancel, orderSummary, onSubmit, isSubmitting, se
                 <p>Your order total is <strong>₹{total.toFixed(2)}</strong>.</p>
                 
                 <div className="payment-instructions">
-                    <p>Please pay the seller directly using the UPI ID below and upload a screenshot of the payment.</p>
+                    <p>Please pay using the UPI ID below and upload a screenshot of the payment.</p>
                     <strong>{sellerUpiId || 'UPI ID not available'}</strong>
                 </div>
 
@@ -1117,6 +1174,7 @@ const Header = ({ currentUser, onLogout, setView, onShowLogin, cartItemCount, on
                                     {currentUser.role === 'seller' && (
                                         <>
                                             <a onClick={() => handleMenuClick('mySales')}>My Sales</a>
+                                            <a onClick={() => handleMenuClick('myLedger')}>My Ledger</a>
                                             <a onClick={() => handleMenuClick('mySellerProfile')}>My Seller Profile</a>
                                         </>
                                     )}
@@ -1235,6 +1293,8 @@ const LoginPage = ({ onLoginSuccess, onCancel, showToast }) => {
 
 // --- PRODUCT & OFFER CARDS ---
 const ProductCard = ({ item, onAddToCart }) => {
+    const isOutOfStock = item.totalQuantity !== undefined && item.totalQuantity <= 0;
+
     return (
         <div className="product-card">
             <div className="image-container">
@@ -1245,8 +1305,12 @@ const ProductCard = ({ item, onAddToCart }) => {
                 </div>
             </div>
             <div className="card-actions">
-                <button className="btn-secondary" onClick={() => onAddToCart(item, 'marketplace')}>
-                    Add to Cart
+                <button 
+                    className="btn-secondary" 
+                    onClick={() => onAddToCart(item, 'marketplace')}
+                    disabled={isOutOfStock}
+                >
+                    {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
                 </button>
             </div>
         </div>
@@ -1461,6 +1525,8 @@ const PostAdPage = ({ currentUser, showToast }) => {
     // Form state
     const [title, setTitle] = useState('');
     const [price, setPrice] = useState('');
+    const [totalQuantity, setTotalQuantity] = useState('');
+    const [maxOrderQuantity, setMaxOrderQuantity] = useState('');
     const [imageBase64, setImageBase64] = useState(null);
     const [promoCode, setPromoCode] = useState('');
     const [promoDiscount, setPromoDiscount] = useState('');
@@ -1504,6 +1570,8 @@ const PostAdPage = ({ currentUser, showToast }) => {
         if (editingAd) {
             setTitle(editingAd.title || '');
             setPrice(editingAd.price || '');
+            setTotalQuantity(editingAd.totalQuantity || '');
+            setMaxOrderQuantity(editingAd.maxOrderQuantity || '');
             setImageBase64(editingAd.imageBase64 || null);
             setPromoCode(editingAd.promoCode?.code || '');
             setPromoDiscount(editingAd.promoCode?.discountPercent || '');
@@ -1512,6 +1580,8 @@ const PostAdPage = ({ currentUser, showToast }) => {
             // Reset form when not editing
             setTitle('');
             setPrice('');
+            setTotalQuantity('');
+            setMaxOrderQuantity('');
             setImageBase64(null);
             setPromoCode('');
             setPromoDiscount('');
@@ -1550,6 +1620,14 @@ const PostAdPage = ({ currentUser, showToast }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        if (currentUser.role === 'seller') {
+            if (Number(maxOrderQuantity) > Number(totalQuantity)) {
+                showToast('Max quantity per order cannot be greater than the total available quantity.', 'error');
+                return;
+            }
+        }
+
         setLoading(true);
         try {
             const adData = {
@@ -1558,12 +1636,17 @@ const PostAdPage = ({ currentUser, showToast }) => {
                 imageBase64,
                 user: currentUser.mobile,
                 status: 'pending', // Always requires re-approval
-                promoCode: {
+            };
+            
+            if (currentUser.role === 'seller') {
+                adData.totalQuantity = Number(totalQuantity);
+                adData.maxOrderQuantity = Number(maxOrderQuantity);
+                adData.promoCode = {
                     code: promoCode,
                     discountPercent: Number(promoDiscount) || 0,
                     isActive: promoIsActive,
-                }
-            };
+                };
+            }
 
             if (editingAd) {
                 await db.collection('ads').doc(editingAd.id).update({
@@ -1600,8 +1683,22 @@ const PostAdPage = ({ currentUser, showToast }) => {
                     </div>
                     <div className="form-group">
                         <label>Price (₹)</label>
-                        <input type="number" value={price} onChange={e => setPrice(e.target.value)} required />
+                        <input type="number" value={price} onChange={e => setPrice(e.target.value)} required min="1" />
                     </div>
+                    
+                    {currentUser.role === 'seller' && (
+                        <>
+                            <div className="form-group">
+                                <label>Total Available Quantity</label>
+                                <input type="number" value={totalQuantity} onChange={e => setTotalQuantity(e.target.value)} placeholder="e.g., 50" required min="0" />
+                            </div>
+                            <div className="form-group">
+                                <label>Max Quantity Per Order</label>
+                                <input type="number" value={maxOrderQuantity} onChange={e => setMaxOrderQuantity(e.target.value)} placeholder="e.g., 5" required min="1" />
+                            </div>
+                        </>
+                    )}
+
                     <div className="form-group">
                         <label>Image</label>
                         <input type="file" accept="image/*" onChange={handleFileChange} required={!editingAd} />
@@ -1653,6 +1750,7 @@ const PostAdPage = ({ currentUser, showToast }) => {
                                 <div className="item-details">
                                     <h4>{ad.title}</h4>
                                     <p>Price: ₹{ad.price}</p>
+                                    {ad.totalQuantity !== undefined && <p>Stock: {ad.totalQuantity}</p>}
                                 </div>
                                 <span className={`status-badge status-${ad.status}`}>{ad.status}</span>
                                 <div className="item-actions">
@@ -1931,8 +2029,119 @@ const MySalesPage = ({ currentUser, showToast, onViewProof }) => { // Seller's v
     );
 };
 
+const SellerLedgerPage = ({ currentUser }) => {
+    const [sales, setSales] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-const CartPage = ({ cart, onUpdateQuantity, onRemove, onClearCart, onConfirm, onCancel, isSubmitting, currentUser, brokerageSettings, showToast }) => {
+    useEffect(() => {
+        if (!currentUser || !currentUser.mobile) {
+            setLoading(false);
+            return;
+        }
+        const fetchSales = async () => {
+            try {
+                const salesSnap = await db.collection('p2p_orders').where('sellerId', '==', currentUser.mobile).get();
+                const salesData = salesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                salesData.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+                setSales(salesData);
+            } catch (error) {
+                console.error("Error fetching sales for ledger: ", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchSales();
+    }, [currentUser]);
+
+    const ledgerSummary = useMemo(() => {
+        const deliveredOrders = sales.filter(s => s.status === 'delivered');
+        const pendingOrders = sales.filter(s => ['payment_verified', 'shipped'].includes(s.status));
+
+        const totalEarnings = deliveredOrders.reduce((acc, order) => {
+            const priceAfterDiscount = (order.subtotal || 0) - (order.discountAmount || 0);
+            const net = priceAfterDiscount - (order.sellerBrokerageFee || 0);
+            return acc + net;
+        }, 0);
+        
+        const totalFees = deliveredOrders.reduce((acc, order) => acc + (order.sellerBrokerageFee || 0), 0);
+        
+        const totalVolume = deliveredOrders.reduce((acc, order) => acc + (order.totalAmount || 0), 0);
+
+        const pendingPayout = pendingOrders.reduce((acc, order) => {
+            const priceAfterDiscount = (order.subtotal || 0) - (order.discountAmount || 0);
+            const net = priceAfterDiscount - (order.sellerBrokerageFee || 0);
+            return acc + net;
+        }, 0);
+
+        return { totalEarnings, totalFees, totalVolume, pendingPayout };
+    }, [sales]);
+
+    if (loading) return <LoadingSpinner />;
+
+    return (
+        <main className="main-content">
+            <h2>My Ledger</h2>
+            <div className="kpi-grid">
+                <div className="kpi-card">
+                    <h4>Total Net Earnings</h4>
+                    <p>₹{ledgerSummary.totalEarnings.toFixed(2)}</p>
+                </div>
+                <div className="kpi-card">
+                    <h4>Pending Payout</h4>
+                    <p>₹{ledgerSummary.pendingPayout.toFixed(2)}</p>
+                </div>
+                <div className="kpi-card">
+                    <h4>Total Sales Volume</h4>
+                    <p>₹{ledgerSummary.totalVolume.toFixed(2)}</p>
+                </div>
+                <div className="kpi-card">
+                    <h4>Total Platform Fees</h4>
+                    <p>₹{ledgerSummary.totalFees.toFixed(2)}</p>
+                </div>
+            </div>
+
+            <div className="table-container">
+                {sales.length === 0 ? (
+                    <p style={{textAlign: 'center', padding: '2rem'}}>You have no sales transactions yet.</p>
+                ) : (
+                    <table className="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Order ID</th>
+                                <th>Buyer</th>
+                                <th>Order Total</th>
+                                <th>Platform Fee</th>
+                                <th>Status</th>
+                                <th>Your Earnings</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {sales.map(order => {
+                                const priceAfterDiscount = (order.subtotal || 0) - (order.discountAmount || 0);
+                                const netEarnings = priceAfterDiscount - (order.sellerBrokerageFee || 0);
+                                return (
+                                    <tr key={order.id}>
+                                        <td>{order.createdAt?.toDate().toLocaleDateString() || 'N/A'}</td>
+                                        <td>{order.id.substring(0, 8).toUpperCase()}</td>
+                                        <td>{order.buyerId}</td>
+                                        <td>₹{(order.totalAmount || 0).toFixed(2)}</td>
+                                        <td>₹{(order.sellerBrokerageFee || 0).toFixed(2)}</td>
+                                        <td><span className={`status-badge status-${order.status}`}>{order.status.replace('_',' ')}</span></td>
+                                        <td style={{fontWeight: 'bold'}}>₹{netEarnings.toFixed(2)}</td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                )}
+            </div>
+        </main>
+    );
+};
+
+
+const CartPage = ({ cart, onUpdateQuantity, onRemove, onClearCart, onConfirm, onCancel, isSubmitting, currentUser, brokerageSettings, sellerData, showToast }) => {
     const [promoCodeInput, setPromoCodeInput] = useState('');
     const [appliedPromo, setAppliedPromo] = useState(null);
 
@@ -1942,6 +2151,10 @@ const CartPage = ({ cart, onUpdateQuantity, onRemove, onClearCart, onConfirm, on
         const firstSellerId = cart[0].user;
         return cart.some(item => item.user !== firstSellerId);
     }, [cart]);
+
+    const isSellerOnAdminRoutePlan = useMemo(() => {
+        return sellerData && ['buyer', 'normal'].includes(sellerData.brokeragePlan);
+    }, [sellerData]);
 
     const subtotal = useMemo(() => cart.reduce((total, item) => total + (item.price || 0) * (item.quantity || 1), 0), [cart]);
 
@@ -1953,19 +2166,20 @@ const CartPage = ({ cart, onUpdateQuantity, onRemove, onClearCart, onConfirm, on
     const priceAfterDiscount = subtotal - discountAmount;
 
     const buyerBrokerageFee = useMemo(() => {
+        if (isSellerOnAdminRoutePlan) return 0; // Zero fee if payment goes to admin
         if (!currentUser || !brokerageSettings) return 0;
-        // All buyers are charged the 'buyer' platform fee rate, regardless of their plan.
         const rate = brokerageSettings['buyer'] || 0;
         return priceAfterDiscount * (rate / 100);
-    }, [currentUser, brokerageSettings, priceAfterDiscount]);
+    }, [currentUser, brokerageSettings, priceAfterDiscount, isSellerOnAdminRoutePlan]);
     
     const finalTotal = priceAfterDiscount + buyerBrokerageFee;
     
     const sellerBrokerageFee = useMemo(() => {
+        if (isSellerOnAdminRoutePlan) return 0; // Zero fee if payment goes to admin
         if (!brokerageSettings) return 0;
         const rate = brokerageSettings['seller'] || 0;
         return priceAfterDiscount * (rate / 100);
-    }, [brokerageSettings, priceAfterDiscount]);
+    }, [brokerageSettings, priceAfterDiscount, isSellerOnAdminRoutePlan]);
 
     const handleApplyPromo = () => {
         const itemWithPromo = cart.find(item => item.promoCode?.code === promoCodeInput.toUpperCase() && item.promoCode?.isActive);
@@ -2088,6 +2302,7 @@ const App = () => {
     const [actionQueue, setActionQueue] = useState(null);
     const [cart, setCart] = useState([]);
     const [showCart, setShowCart] = useState(false);
+    const [cartSellerData, setCartSellerData] = useState(null);
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [orderConfirmation, setOrderConfirmation] = useState({ show: false, message: '' });
@@ -2096,21 +2311,29 @@ const App = () => {
     const [viewingProof, setViewingProof] = useState(null);
     const [toast, setToast] = useState({ show: false, message: '', type: '' });
     const [brokerageSettings, setBrokerageSettings] = useState(null);
+    const [adminSettings, setAdminSettings] = useState(null);
 
 
     useEffect(() => {
-        // Fetch brokerage settings once
         const fetchSettings = async () => {
             try {
-                const settingsDoc = await db.collection('app_settings').doc('brokerage').get();
-                if (settingsDoc.exists) {
-                    setBrokerageSettings(settingsDoc.data());
+                const brokerageDoc = await db.collection('app_settings').doc('brokerage').get();
+                if (brokerageDoc.exists) {
+                    setBrokerageSettings(brokerageDoc.data());
                 } else {
                     console.warn("Brokerage settings not found in Firestore.");
                     setBrokerageSettings({ normal: 0, buyer: 0, seller: 0 }); // Default fallback
                 }
+
+                const adminDoc = await db.collection('app_settings').doc('admin_details').get();
+                if (adminDoc.exists) {
+                    setAdminSettings(adminDoc.data());
+                } else {
+                    console.warn("Admin settings (UPI) not found in Firestore.");
+                }
+
             } catch (error) {
-                console.error("Error fetching brokerage settings:", error);
+                console.error("Error fetching app settings:", error);
             }
         };
 
@@ -2153,6 +2376,29 @@ const App = () => {
             setCart([]);
         }
     }, [currentUser]); // This logic runs whenever a user logs in or out
+    
+    // Effect to fetch seller data when cart is opened
+    useEffect(() => {
+        const fetchCartSellerData = async () => {
+            if (showCart && cart.length > 0 && cart[0].user) {
+                try {
+                    const sellerRef = db.collection('users').doc(cart[0].user);
+                    const sellerDoc = await sellerRef.get();
+                    if (sellerDoc.exists) {
+                        setCartSellerData(sellerDoc.data());
+                    } else {
+                        setCartSellerData(null); // Seller not found
+                    }
+                } catch (error) {
+                    console.error("Error fetching cart seller data:", error);
+                    setCartSellerData(null);
+                }
+            } else if (!showCart) { // Reset when cart is hidden
+                setCartSellerData(null);
+            }
+        };
+        fetchCartSellerData();
+    }, [showCart, cart]);
 
     // Effect to save the cart to localStorage whenever it changes
     useEffect(() => {
@@ -2215,6 +2461,12 @@ const App = () => {
             showToast("You cannot buy your own item.", "error");
             return;
         }
+
+        if (item.totalQuantity !== undefined && item.totalQuantity <= 0) {
+            showToast("This item is currently out of stock.", "error");
+            return;
+        }
+        
         setCart(prevCart => {
             const existingItem = prevCart.find(cartItem => cartItem.id === item.id);
             if (existingItem) {
@@ -2227,8 +2479,26 @@ const App = () => {
     };
 
     const handleUpdateCartQuantity = (itemId, newQuantity) => {
+        const itemInCart = cart.find(item => item.id === itemId);
+        if (!itemInCart) return;
+
         if (newQuantity < 1) return;
-        setCart(prevCart => prevCart.map(item => item.id === itemId ? { ...item, quantity: newQuantity } : item));
+
+        // Check max quantity per order limit
+        if (itemInCart.maxOrderQuantity && newQuantity > itemInCart.maxOrderQuantity) {
+            showToast(`You can only order a maximum of ${itemInCart.maxOrderQuantity} units.`, 'error');
+            return;
+        }
+
+        // Check total available stock limit
+        if (itemInCart.totalQuantity !== undefined && newQuantity > itemInCart.totalQuantity) {
+            showToast(`Only ${itemInCart.totalQuantity} units are available in stock.`, 'error');
+            return;
+        }
+
+        setCart(prevCart => prevCart.map(item =>
+            item.id === itemId ? { ...item, quantity: newQuantity } : item
+        ));
     };
 
     const handleRemoveFromCart = (itemId) => {
@@ -2237,7 +2507,9 @@ const App = () => {
 
     const handleClearCart = () => {
         setCart([]);
-        localStorage.removeItem(`navroseCart_${currentUser.mobile}`);
+        if(currentUser?.mobile) {
+            localStorage.removeItem(`navroseCart_${currentUser.mobile}`);
+        }
         showToast('Cart has been cleared.', 'info');
     };
 
@@ -2257,12 +2529,36 @@ const App = () => {
         try {
             const sellerRef = db.collection('users').doc(orderSummary.sellerId);
             const sellerDoc = await sellerRef.get();
-            if (!sellerDoc.exists || !sellerDoc.data().upiId) {
-                showToast("The seller has not set up their payment information. Cannot proceed.", "error");
+
+            if (!sellerDoc.exists) {
+                showToast("Seller not found. Cannot proceed.", "error");
                 return;
             }
-            setSellerUpiForPayment(sellerDoc.data().upiId);
-            setPendingOrder(orderSummary);
+            
+            const sellerData = sellerDoc.data();
+            let upiIdToUse = '';
+            let paymentRecipient = 'seller'; // Default recipient
+
+            // If the seller is on a 'buyer' or 'normal' plan, payment goes to admin
+            if (['buyer', 'normal'].includes(sellerData.brokeragePlan)) {
+                if (adminSettings && adminSettings.upiId) {
+                    upiIdToUse = adminSettings.upiId;
+                    paymentRecipient = 'admin';
+                } else {
+                    showToast("Admin payment details are not configured. Cannot proceed with this order.", "error");
+                    return;
+                }
+            } else {
+                // Original flow for 'seller' role or other user plans
+                if (!sellerData.upiId) {
+                    showToast("The seller has not set up their payment information. Cannot proceed.", "error");
+                    return;
+                }
+                upiIdToUse = sellerData.upiId;
+            }
+            
+            setSellerUpiForPayment(upiIdToUse);
+            setPendingOrder({ ...orderSummary, paymentRecipient }); // Pass recipient to the pending order state
             setShowCart(false);
             setShowPaymentModal(true);
         } catch (error) {
@@ -2281,10 +2577,42 @@ const App = () => {
 
         setIsSubmitting(true);
         try {
+            // Use a transaction to ensure stock is updated atomically before creating the order
+            await db.runTransaction(async (transaction) => {
+                const stockUpdatePromises = pendingOrder.cart.map(item => {
+                    const adRef = db.collection('ads').doc(item.id);
+                    return transaction.get(adRef);
+                });
+
+                const adDocs = await Promise.all(stockUpdatePromises);
+
+                for (let i = 0; i < adDocs.length; i++) {
+                    const adDoc = adDocs[i];
+                    const item = pendingOrder.cart[i];
+
+                    if (!adDoc.exists) {
+                        throw new Error(`Item "${item.title}" is no longer available.`);
+                    }
+
+                    const adData = adDoc.data();
+                    const currentStock = adData.totalQuantity;
+
+                    if (currentStock !== undefined && currentStock < item.quantity) {
+                        throw new Error(`Not enough stock for "${item.title}". Only ${currentStock} left.`);
+                    }
+                    
+                    if (currentStock !== undefined) {
+                        const newStock = currentStock - item.quantity;
+                        transaction.update(adDoc.ref, { totalQuantity: newStock });
+                    }
+                }
+            });
+
+            // If transaction succeeds, proceed to create the order
             const orderData = {
                 buyerId: currentUser.mobile,
                 sellerId: pendingOrder.sellerId,
-                sellerUpiId: sellerUpiForPayment,
+                sellerUpiId: sellerUpiForPayment, // This will be admin's or seller's UPI
                 items: pendingOrder.cart.map(i => ({ id: i.id, title: i.title, price: i.price, quantity: i.quantity })),
                 subtotal: pendingOrder.subtotal,
                 discountAmount: pendingOrder.discountAmount,
@@ -2295,6 +2623,7 @@ const App = () => {
                 status: 'pending_payment',
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                 paymentProofImage: paymentProofBase64,
+                paymentRecipient: pendingOrder.paymentRecipient || 'seller',
             };
             
             await db.collection('p2p_orders').add(orderData);
@@ -2313,8 +2642,9 @@ const App = () => {
             setShowPaymentModal(false);
             setPendingOrder(null);
             setOrderConfirmation({ show: true, message: 'Your order has been submitted! The seller will verify your payment and confirm.' });
+
         } catch (error) {
-            console.error("Error placing P2P order: ", error);
+            console.error("Error placing P2P order or updating stock: ", error);
             setOrderConfirmation({ show: true, message: `Failed to place order: ${error.message || 'Please try again.'}` });
         } finally {
             setIsSubmitting(false);
@@ -2329,6 +2659,7 @@ const App = () => {
             case 'myAds': return <MyAdsPage currentUser={currentUser} />;
             case 'myOrders': return <MyOrdersPage currentUser={currentUser} onViewProof={setViewingProof} />;
             case 'mySales': return <MySalesPage currentUser={currentUser} showToast={showToast} onViewProof={setViewingProof} />;
+            case 'myLedger': return <SellerLedgerPage currentUser={currentUser} />;
             default: return <HomePage onAddToCart={handleAddToCart} currentUser={currentUser} />;
         }
     };
@@ -2358,7 +2689,8 @@ const App = () => {
                 onCancel={() => setShowCart(false)} 
                 isSubmitting={isSubmitting} 
                 currentUser={currentUser} 
-                brokerageSettings={brokerageSettings} 
+                brokerageSettings={brokerageSettings}
+                sellerData={cartSellerData}
                 showToast={showToast} 
             />}
             {showPaymentModal && <PaymentModal show={showPaymentModal} onCancel={() => setShowPaymentModal(false)} orderSummary={pendingOrder} onSubmit={handleSubmitOrderWithProof} isSubmitting={isSubmitting} sellerUpiId={sellerUpiForPayment} />}
