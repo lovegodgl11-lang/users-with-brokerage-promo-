@@ -1,0 +1,2273 @@
+<!DOCTYPE html>
+<html lang="en" class=""><head><script>window.livecodes = window.livecodes || {};</script><title>Untitled Project</title><meta name="title" content="Untitled Project"><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="stylesheet" href="./style.css"><script src="https://cdn.jsdelivr.net/npm/es-module-shims@1.10.0/dist/es-module-shims.js" async=""></script><script type="importmap">{
+  "imports": {}
+}</script></head><body>
+
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navrose</title>
+    
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <style>
+:root {
+    --primary-color: #002f34;
+    --secondary-color: #4caf50;
+    --background-color: #f0f2f5;
+    --card-background: #ffffff;
+    --text-color: #333;
+    --text-color-light: #6c757d;
+    --border-color: #dee2e6;
+    --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --border-radius: 8px;
+    --danger-color: #dc3545;
+    --info-color: #17a2b8;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    margin: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+/* --- HEADER --- */
+.header {
+    background-color: var(--card-background);
+    padding: 0 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    height: 64px;
+}
+.logo {
+    font-size: 1.75rem;
+    color: var(--primary-color);
+    margin: 0;
+    cursor: pointer;
+}
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem; /* Added gap for spacing between icons */
+}
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, opacity 0.2s;
+}
+.btn-primary:hover {
+    background-color: #001f22;
+}
+.btn-primary:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* New Header Icon Button Styles */
+.header-icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+    position: relative;
+}
+.header-icon-btn svg {
+    width: 24px;
+    height: 24px;
+    fill: var(--primary-color);
+}
+.header-icon-btn:hover {
+    background-color: var(--background-color);
+}
+
+.cart-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: var(--danger-color);
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+
+/* --- USER & NOTIFICATION MENU --- */
+.user-menu-container, .notification-container {
+    position: relative;
+}
+.user-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--background-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+}
+.user-icon svg {
+    width: 24px;
+    height: 24px;
+    fill: var(--primary-color);
+}
+.dropdown-menu {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background-color: var(--card-background);
+    border-radius: var(--border-radius);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    width: 220px;
+    overflow: hidden;
+    z-index: 1100;
+    border: 1px solid var(--border-color);
+    max-height: 400px;
+    overflow-y: auto;
+}
+.notification-dropdown {
+    width: 320px;
+}
+.dropdown-header {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.9rem;
+    color: var(--text-color-light);
+    font-weight: bold;
+}
+.dropdown-menu a {
+    display: block;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    color: var(--text-color);
+    cursor: pointer;
+    font-size: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+.dropdown-menu a:last-child {
+    border-bottom: none;
+}
+.dropdown-menu a:hover {
+    background-color: var(--background-color);
+}
+/* New style for unread notifications */
+.notification-item.unread {
+    background-color: #f0f8ff; /* A subtle blue tint */
+}
+.notification-item.unread .notification-message {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+.notification-message {
+    font-size: 0.9rem;
+    white-space: normal;
+}
+.notification-time {
+    display: block;
+    color: var(--text-color-light);
+    font-size: 0.75rem;
+    margin-top: 4px;
+}
+.no-notifications {
+    padding: 1.5rem;
+    text-align: center;
+    color: var(--text-color-light);
+}
+
+
+/* --- MAIN CONTENT & GRIDS --- */
+.main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+.category-section {
+    margin-bottom: 2.5rem;
+}
+.category-section h2 {
+    font-size: 1.8rem;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border-color);
+}
+.product-grid { /* Kept for non-slider pages */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+/* --- SLIDER STYLES --- */
+.slider-container {
+    position: relative;
+}
+.slider-track {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+    padding-bottom: 1rem; /* Space for scrollbar if it appears */
+    gap: 1.5rem;
+}
+.slider-track::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for Chrome, Safari and Opera */
+}
+.slider-item {
+    flex: 0 0 auto;
+    width: 220px;
+}
+.slider-btn {
+    position: absolute;
+    top: calc(50% - 30px); /* Adjust vertical position */
+    transform: translateY(-50%);
+    z-index: 10;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+.slider-btn:hover {
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+.slider-btn.prev { left: -15px; }
+.slider-btn.next { right: -15px; }
+
+/* --- CARD OVERLAY STYLES --- */
+.product-card, .offer-card {
+    background: var(--card-background);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--box-shadow);
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+}
+.product-card:hover, .offer-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+.image-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+.product-image, .offer-image {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    background-color: #eee;
+    display: block;
+}
+.product-info-overlay, .offer-info-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 2.5rem 1rem 1rem 1rem;
+    background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.8) 100%);
+    color: white;
+    text-align: left;
+}
+.product-title, .offer-title {
+    color: #fff;
+    margin: 0 0 0.25rem;
+    font-weight: bold;
+    font-size: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.product-price {
+    color: #f1f1f1;
+    margin: 0;
+    font-weight: normal;
+    font-size: 1.1rem;
+}
+.offer-description {
+    font-size: 0.9rem;
+    color: #eee;
+    margin-top: 0;
+}
+.card-actions {
+    padding: 1rem;
+    margin-top: auto;
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 0.6rem 1rem;
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.2s;
+}
+.btn-secondary:hover {
+    background-color: #45a049;
+}
+
+/* --- FORMS --- */
+.form-container {
+    background-color: var(--card-background);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    max-width: 600px;
+    margin: 2rem auto;
+}
+.form-container h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--primary-color);
+}
+.form-group {
+    margin-bottom: 1.5rem;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+.form-group input, .form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    box-sizing: border-box;
+}
+.image-preview {
+    max-width: 100%;
+    max-height: 200px;
+    margin-top: 1rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+}
+.promo-code-section {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-top: 2rem;
+    background-color: #f8f9fa;
+}
+.promo-code-section h4 {
+    margin-top: 0;
+    color: var(--primary-color);
+}
+.promo-flex {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+.promo-flex .form-group {
+    flex: 1;
+    margin-bottom: 0;
+}
+.toggle-switch {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+
+/* --- LIST VIEWS (My Ads, etc) --- */
+.list-container {
+    background-color: var(--card-background);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 1rem;
+}
+.list-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    gap: 1rem;
+}
+.list-item:last-child {
+    border-bottom: none;
+}
+.list-item img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: var(--border-radius);
+}
+.item-details {
+    flex-grow: 1;
+}
+.item-details h4 { margin: 0 0 0.25rem; }
+.item-details p { margin: 0; color: var(--text-color-light); }
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: white;
+    text-transform: capitalize;
+}
+.status-approved, .status-active, .status-delivered { background-color: var(--secondary-color); }
+.status-pending, .status-pending_payment { background-color: #ffc107; color: var(--text-color); }
+.status-rejected, .status-cancelled { background-color: #dc3545; }
+.status-payment_verified, .status-shipped { background-color: var(--info-color); }
+
+
+/* --- MODAL, SPINNER, CART, TOAST --- */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 1500;
+}
+.modal-content {
+    background: var(--card-background);
+    padding: 2.5rem;
+    border-radius: var(--border-radius);
+    width: 90%;
+    max-width: 450px; /* Increased max-width for payment modal */
+    position: relative;
+    text-align: center;
+}
+.modal-close-btn {
+    position: absolute; top: 10px; right: 15px;
+    background: none; border: none; font-size: 2rem; cursor: pointer;
+    color: var(--text-color-light);
+}
+.auth-modal h2 { margin-top: 0; color: var(--primary-color); }
+.auth-modal .form-group button { width: 100%; margin-top: 0.5rem; padding: 0.75rem; font-size: 1rem; }
+.error-message { color: var(--danger-color); }
+#recaptcha-container { margin-top: 1rem; }
+
+.toast {
+    position: fixed;
+    top: 80px; /* Below the header */
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 1rem 1.5rem;
+    border-radius: var(--border-radius);
+    color: white;
+    z-index: 2000;
+    opacity: 0;
+    transform: translate(-50%, -20px);
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+    visibility: hidden;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    min-width: 300px;
+    text-align: center;
+}
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%);
+    visibility: visible;
+}
+.toast-success { background-color: var(--secondary-color); }
+.toast-error { background-color: var(--danger-color); }
+.toast-info { background-color: var(--info-color); }
+
+/* --- PAYMENT MODAL --- */
+.payment-instructions {
+    text-align: center;
+    background-color: var(--background-color);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border-color);
+}
+.payment-instructions p { margin: 0 0 1rem; }
+.payment-instructions strong { color: var(--primary-color); font-size: 1.1rem; }
+.qr-code-image {
+    display: block;
+    max-width: 200px;
+    margin: 0.5rem auto 1rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+}
+
+
+.loading-container {
+    display: flex; justify-content: center; align-items: center;
+    min-height: 80vh; flex-direction: column; gap: 1rem;
+    color: var(--primary-color);
+}
+.spinner {
+    border: 5px solid rgba(0, 47, 52, 0.1);
+    width: 50px; height: 50px; border-radius: 50%;
+    border-left-color: var(--primary-color);
+    animation: spin 1s ease infinite;
+}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* --- CART PAGE STYLES --- */
+.cart-modal-content {
+    background: var(--card-background);
+    border-radius: var(--border-radius);
+    width: 90%;
+    max-width: 600px; /* Reduced width */
+    max-height: 85vh; /* Changed from fixed height */
+    display: flex;
+    flex-direction: column;
+    position: relative; /* Added for close button */
+}
+.cart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+.cart-header h2 {
+    margin: 0;
+    color: var(--primary-color);
+}
+.cart-items-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+}
+.empty-cart-message {
+    text-align: center;
+    padding: 3rem;
+    font-size: 1.2rem;
+    color: var(--text-color-light);
+}
+.cart-item {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+.cart-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+.cart-item img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: var(--border-radius);
+}
+.cart-item-info {
+    flex-grow: 1;
+}
+.cart-item-info h4 { margin: 0 0 0.5rem; }
+.cart-item-info p { margin: 0; font-weight: bold; color: var(--primary-color); }
+.cart-item-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+}
+.quantity-control {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+}
+.quantity-control button {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+}
+.quantity-control button:disabled {
+    color: var(--border-color);
+    cursor: not-allowed;
+}
+.quantity-control span {
+    padding: 0.5rem 1rem;
+    font-weight: bold;
+}
+.btn-remove {
+    background: none;
+    border: none;
+    color: var(--danger-color);
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+.cart-summary {
+    padding: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+.promo-code-area {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+.promo-code-area input {
+    flex-grow: 1;
+    padding: 0.6rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+}
+.promo-code-area button {
+    padding: 0.6rem 1rem;
+}
+.totals-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+.totals-section .summary-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1rem;
+}
+.totals-section .summary-line.total {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-color);
+}
+.discount-success {
+    color: var(--secondary-color);
+    font-weight: bold;
+}
+.cart-summary .btn-primary {
+    width: 100%;
+    padding: 0.75rem 2rem;
+    margin-top: 1rem;
+}
+.mixed-cart-warning {
+    color: var(--danger-color);
+    text-align: center;
+    padding: 1rem;
+    background-color: #f8d7da;
+    border-radius: var(--border-radius);
+    margin: 0 1.5rem 1rem 1.5rem;
+    border: 1px solid #f5c6cb;
+}
+
+
+/* --- ORDER CONFIRMATION MODAL --- */
+.confirmation-modal {
+    text-align: center;
+}
+.confirmation-modal h3 {
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+.confirmation-modal p {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
+.confirmation-modal .btn-primary {
+    width: 100%;
+}
+
+/* --- MY ORDERS & MY SALES PAGE --- */
+.order-list-item {
+    background-color: var(--card-background);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
+}
+.order-list-item:last-child {
+    margin-bottom: 0;
+}
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.order-header h4 {
+    margin: 0 0 0.25rem;
+    color: var(--primary-color);
+}
+.order-header p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-color-light);
+}
+.order-summary {
+    text-align: right;
+    flex-shrink: 0;
+}
+.order-total {
+    font-weight: bold;
+    font-size: 1.1rem !important;
+    color: var(--text-color) !important;
+}
+.order-summary .status-badge {
+    margin-bottom: 0.5rem;
+    display: inline-block;
+}
+.order-items {
+    font-size: 0.9rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.order-item-detail {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid #f8f9fa;
+}
+.order-item-detail:last-child {
+    border-bottom: none;
+}
+.seller-actions {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+.seller-actions select {
+    padding: 0.5rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+}
+.btn-whatsapp {
+    background-color: #25D366;
+    color: white !important;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* --- CHATBOT MODAL --- */
+.chatbot-modal-overlay { z-index: 1600; }
+.chatbot-modal-content {
+    max-width: 400px;
+    height: 70vh;
+    max-height: 600px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+.chatbot-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary-color);
+    color: white;
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+}
+.chatbot-header h3 { margin: 0; }
+.chatbot-header .modal-close-btn { color: white; position: static; font-size: 1.5rem; }
+.chatbot-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    background-color: var(--background-color);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.message-bubble-wrapper { display: flex; }
+.user-wrapper { justify-content: flex-end; }
+.bot-wrapper { justify-content: flex-start; }
+.message-bubble {
+    padding: 0.75rem 1rem;
+    border-radius: 18px;
+    max-width: 80%;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+.user-message {
+    background-color: var(--primary-color);
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+.bot-message {
+    background-color: var(--card-background);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-bottom-left-radius: 4px;
+}
+.bot-message a {
+    color: var(--secondary-color);
+    font-weight: bold;
+    text-decoration: underline;
+}
+.chatbot-input-area {
+    display: flex;
+    padding: 1rem;
+    border-top: 1px solid var(--border-color);
+    gap: 0.5rem;
+}
+.chatbot-input-area input {
+    flex-grow: 1;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 0.75rem;
+}
+.chatbot-input-area button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: bold;
+}
+
+
+@media (max-width: 768px) {
+    .header-content { padding: 0 0.5rem; }
+    .header-actions { gap: 0.25rem; }
+    .main-content { padding: 1rem 0.5rem; }
+    .category-section h2 { font-size: 1.5rem; padding-left: 0.5rem; }
+    .product-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }
+    .logo { font-size: 1.5rem; }
+    .cart-item { flex-direction: column; align-items: flex-start; }
+    .cart-item-actions { flex-direction: row; align-items: center; width: 100%; justify-content: space-between; }
+    .slider-btn { display: none; } /* Hide buttons on mobile, rely on swipe */
+
+    /* Swiggy Style Slider for Mobile */
+    .slider-item {
+        width: 160px;
+    }
+    .product-card .image-container, .offer-card .image-container {
+        aspect-ratio: 4 / 5;
+    }
+    .product-title {
+        font-size: 0.9rem;
+    }
+    .card-actions {
+        padding: 0.75rem;
+    }
+    .btn-secondary {
+        padding: 0.6rem;
+        font-size: 0.85rem;
+    }
+    .product-info-overlay {
+        padding-top: 3rem;
+    }
+
+    /* Mobile User Panel Improvements */
+    .dropdown-menu {
+        width: 280px; /* Make dropdown wider */
+    }
+    .dropdown-menu a {
+        padding: 1rem; /* Increase tap area */
+        font-size: 1rem; /* Increase font size */
+    }
+    .notification-dropdown {
+        width: 90vw; /* Make notification dropdown almost full width */
+        max-width: 350px; 
+    }
+}
+    </style>
+<link rel="stylesheet" href="/index.css">
+
+
+    <div id="root"></div>
+    <script type="text/babel" data-presets="react">
+const { useState, useEffect, useMemo, useRef } = React;
+
+// --- FIREBASE SETUP ---
+const firebaseConfig = {
+    apiKey: "AIzaSyC-zGSwTLq84DV3H-g_XL5-GnwSnaiPF6M",
+    authDomain: "navrose-earning-app-version-3.firebaseapp.com",
+    databaseURL: "https://navrose-earning-app-version-3-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "navrose-earning-app-version-3",
+    storageBucket: "navrose-earning-app-version-3.firebasestorage.app",
+    messagingSenderId: "1055847392099",
+    appId: "1:1055847392099:web:743985132a92f4e9d62956"
+};
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.firestore();
+
+// --- HELPER & UTILITY COMPONENTS ---
+const compressImageToBase64 = (file) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onerror = reject;
+    reader.onload = (event) => {
+        if (event.target && typeof event.target.result === 'string') {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onerror = reject;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const maxWidth = 800;
+                const scaleSize = maxWidth / img.width;
+                canvas.width = maxWidth;
+                canvas.height = img.height * scaleSize;
+                const ctx = canvas.getContext('2d');
+                if (ctx) {
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.7));
+                } else {
+                    reject(new Error('Could not get canvas context.'));
+                }
+            };
+        } else {
+            reject(new Error('FileReader result is not a string.'));
+        }
+    };
+});
+
+const LoadingSpinner = () => (
+    <div className="loading-container">
+        <div className="spinner"></div>
+        <p>Loading Navrose...</p>
+    </div>
+);
+
+const Toast = ({ message, type, show, onHide }) => {
+    useEffect(() => {
+        if (show) {
+            const timer = setTimeout(() => onHide(), 4000); // Auto-hide after 4s
+            return () => clearTimeout(timer);
+        }
+    }, [show, onHide]);
+
+    if (!show) return null;
+
+    return (
+        <div className={`toast toast-${type} ${show ? 'show' : ''}`}>
+            {message}
+        </div>
+    );
+};
+
+const OrderConfirmationModal = ({ show, message, onClose }) => {
+    if (!show) return null;
+    return (
+        <div className="modal-overlay">
+            <div className="modal-content confirmation-modal">
+                <h3>Order Status</h3>
+                <p>{message}</p>
+                <button className="btn-primary" onClick={onClose}>OK</button>
+            </div>
+        </div>
+    );
+};
+
+const ImageModal = ({ src, onClose }) => {
+    if (!src) return null;
+    return (
+        <div className="modal-overlay" onClick={onClose}>
+            <div className="modal-content" style={{ padding: '1.5rem', maxWidth: '500px', textAlign: 'center' }} onClick={e => e.stopPropagation()}>
+                <button className="modal-close-btn" onClick={onClose}>&times;</button>
+                <h3 style={{ marginTop: 0 }}>Payment Proof</h3>
+                <img src={src} alt="Payment Proof" style={{ width: '100%', borderRadius: 'var(--border-radius)', border: '1px solid var(--border-color)' }} />
+            </div>
+        </div>
+    );
+};
+
+
+// --- NEW PAYMENT MODAL COMPONENT ---
+const PaymentModal = ({ show, onCancel, orderSummary, onSubmit, isSubmitting, sellerUpiId }) => {
+    if (!show) return null;
+
+    const [paymentProof, setPaymentProof] = useState(null);
+    const total = orderSummary ? orderSummary.finalTotal : 0;
+
+    const handleFileChange = async (e) => {
+        if (e.target.files && e.target.files[0]) {
+            const base64 = await compressImageToBase64(e.target.files[0]);
+            setPaymentProof(base64);
+        }
+    };
+
+    return (
+        <div className="modal-overlay">
+            <div className="modal-content">
+                <button className="modal-close-btn" onClick={onCancel}>&times;</button>
+                <h3>Payment Required</h3>
+                <p>Your order total is <strong>₹{total.toFixed(2)}</strong>.</p>
+                
+                <div className="payment-instructions">
+                    <p>Please pay the seller directly using the UPI ID below and upload a screenshot of the payment.</p>
+                    <strong>{sellerUpiId || 'UPI ID not available'}</strong>
+                </div>
+
+                <div className="form-group">
+                    <label>Upload Payment Proof (Screenshot)</label>
+                    <input type="file" accept="image/*" onChange={handleFileChange} required />
+                    {paymentProof && <img src={paymentProof} alt="Payment proof preview" className="image-preview" />}
+                </div>
+                
+                <button 
+                    className="btn-primary" 
+                    style={{width: '100%'}}
+                    onClick={() => onSubmit(paymentProof)}
+                    disabled={!paymentProof || isSubmitting || !sellerUpiId}
+                >
+                    {isSubmitting ? 'Submitting...' : 'Submit Order & Proof'}
+                </button>
+            </div>
+        </div>
+    );
+};
+
+
+// --- CHATBOT MODAL ---
+const ChatbotModal = ({ show, onClose }) => {
+    const [messages, setMessages] = useState([
+        { sender: 'bot', text: "Hi! Welcome to Navrose Support. How can I help you today? You can ask about orders, ads, or your seller profile." }
+    ]);
+    const [inputValue, setInputValue] = useState('');
+    const messagesEndRef = useRef(null);
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    useEffect(scrollToBottom, [messages]);
+
+    const generateBotResponse = (userInput) => {
+        const lowerInput = userInput.toLowerCase();
+        
+        const adminContactLink = `<a href="https://wa.me/917696272780" target="_blank" rel="noopener noreferrer">contact our admin on WhatsApp</a>`;
+
+        if (lowerInput.includes('order') || lowerInput.includes('delivery') || lowerInput.includes('status')) {
+            return "You can check your order status on the 'My Orders' page. For issues with an order, please contact the seller directly. If you cannot resolve it, you can " + adminContactLink + ".";
+        }
+        if (lowerInput.includes('seller') || lowerInput.includes('profile')) {
+            return "If you are an approved seller, you can manage your sales and update your UPI ID from the 'My Sales' and 'My Seller Profile' pages, accessible from the user menu.";
+        }
+        if (lowerInput.includes('ad') || lowerInput.includes('post') || lowerInput.includes('sell')) {
+            return "To sell an item, you must be an approved seller. Once approved, click your profile icon and select 'Sell an Item'. Your ad will become visible after admin approval.";
+        }
+        if (lowerInput.includes('payment') || lowerInput.includes('upi') || lowerInput.includes('pay')) {
+            return "Payments are made directly to the seller's UPI ID, which is shown at checkout. Navrose does not process payments directly.";
+        }
+        if (lowerInput.includes('hello') || lowerInput.includes('hi') || lowerInput.includes('hey')) {
+            return "Hello! How can I assist you?";
+        }
+
+        return "I'm sorry, I couldn't understand that. For more specific questions, please " + adminContactLink + ". Our team will be happy to assist you.";
+    };
+
+    const handleSendMessage = (e) => {
+        e.preventDefault();
+        const trimmedInput = inputValue.trim();
+        if (!trimmedInput) return;
+
+        const userMessage = { sender: 'user', text: trimmedInput };
+        setMessages(prev => [...prev, userMessage]);
+        setInputValue('');
+
+        setTimeout(() => {
+            const botResponseText = generateBotResponse(trimmedInput);
+            const botMessage = { sender: 'bot', text: botResponseText };
+            setMessages(prev => [...prev, botMessage]);
+        }, 500); // Simulate bot "thinking"
+    };
+
+    if (!show) return null;
+
+    return (
+        <div className="modal-overlay chatbot-modal-overlay">
+            <div className="modal-content chatbot-modal-content">
+                <div className="chatbot-header">
+                    <h3>Navrose Support</h3>
+                    <button className="modal-close-btn" onClick={onClose}>&times;</button>
+                </div>
+                <div className="chatbot-messages">
+                    {messages.map((msg, index) => (
+                        <div key={index} className={`message-bubble-wrapper ${msg.sender}-wrapper`}>
+                           <div className={`message-bubble ${msg.sender}-message`}>
+                                <span dangerouslySetInnerHTML={{ __html: msg.text }}></span>
+                           </div>
+                        </div>
+                    ))}
+                    <div ref={messagesEndRef} />
+                </div>
+                <form className="chatbot-input-area" onSubmit={handleSendMessage}>
+                    <input
+                        type="text"
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        placeholder="Type your message..."
+                        autoFocus
+                    />
+                    <button type="submit">Send</button>
+                </form>
+            </div>
+        </div>
+    );
+};
+
+// --- HEADER & NAVIGATION ---
+const Header = ({ currentUser, onLogout, setView, onShowLogin, cartItemCount, onShowCart, onShowChat }) => {
+    const [menuOpen, setMenuOpen] = useState(false);
+    const [notificationsOpen, setNotificationsOpen] = useState(false);
+    const [notifications, setNotifications] = useState([]);
+    const menuRef = useRef(null);
+    const notificationRef = useRef(null);
+    
+    const unreadCount = useMemo(() => notifications.filter(n => !n.read).length, [notifications]);
+
+    useEffect(() => {
+        if (!currentUser) {
+            setNotifications([]);
+            return;
+        }
+        const unsub = db.collection('notifications')
+            .where('userId', '==', currentUser.mobile)
+            .limit(10)
+            .onSnapshot(snapshot => {
+                const notifs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                // Client-side sort to ensure newest appear first
+                notifs.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+                setNotifications(notifs);
+            }, err => {
+                console.error("Error in notification listener:", err);
+            });
+        return () => unsub();
+    }, [currentUser]);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (menuRef.current && !menuRef.current.contains(event.target)) setMenuOpen(false);
+            if (notificationRef.current && !notificationRef.current.contains(event.target)) setNotificationsOpen(false);
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [menuRef, notificationRef]);
+
+    const handleMenuClick = (view) => {
+        setView(view);
+        setMenuOpen(false);
+    };
+    
+    const handleOpenNotifications = () => {
+        setNotificationsOpen(prev => !prev);
+        if (!notificationsOpen) { // Only mark as read when opening
+            const unreadIds = notifications.filter(n => !n.read).map(n => n.id);
+            if (unreadIds.length > 0) {
+                const batch = db.batch();
+                unreadIds.forEach(id => {
+                    const docRef = db.collection('notifications').doc(id);
+                    batch.update(docRef, { read: true });
+                });
+                batch.commit().catch(err => console.error("Error marking notifications as read:", err));
+            }
+        }
+    };
+    
+    const handleNotificationClick = (notification) => {
+        if (notification.link) setView(notification.link);
+        setNotificationsOpen(false);
+    };
+
+    return (
+        <header className="header">
+            <div className="header-content">
+                <h1 className="logo" onClick={() => setView('home')}>Navrose</h1>
+                <div className="header-actions">
+                    <button className="header-icon-btn" title="Home" onClick={() => setView('home')}>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"></path></svg>
+                    </button>
+                     <button className="header-icon-btn" title="Flash Offers" onClick={() => setView('flashOffers')}>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2v11h3v9l7-12h-4l4-8z"></path></svg>
+                    </button>
+                    <button className="header-icon-btn cart-btn" title="Cart" onClick={onShowCart}>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"></path></svg>
+                        {cartItemCount > 0 && <span className="cart-badge">{cartItemCount}</span>}
+                    </button>
+                    <div className="notification-container" ref={notificationRef}>
+                        <button className="header-icon-btn" title="Notifications" onClick={handleOpenNotifications}>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"></path></svg>
+                            {unreadCount > 0 && <span className="cart-badge">{unreadCount}</span>}
+                        </button>
+                        {notificationsOpen && (
+                            <div className="dropdown-menu notification-dropdown">
+                                <div className="dropdown-header">Notifications</div>
+                                {notifications.length > 0 ? (
+                                    notifications.map(n => (
+                                        <a key={n.id} onClick={() => handleNotificationClick(n)} className={`notification-item ${!n.read ? 'unread' : ''}`}>
+                                            <span className="notification-message">{n.message}</span>
+                                            <span className="notification-time">
+                                                {n.createdAt?.toDate().toLocaleString()}
+                                            </span>
+                                        </a>
+                                    ))
+                                ) : (
+                                    <div className="no-notifications">No new notifications</div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                     <button className="header-icon-btn" title="Chat" onClick={onShowChat}>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"></path></svg>
+                    </button>
+                    
+                    {currentUser ? (
+                        <div className="user-menu-container" ref={menuRef}>
+                            <div className="user-icon" onClick={() => setMenuOpen(!menuOpen)}>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path></svg>
+                            </div>
+                            {menuOpen && (
+                                <div className="dropdown-menu">
+                                    <div className="dropdown-header">
+                                        Signed in as <br/><strong>{currentUser.name}</strong><br/><small>{currentUser.mobile}</small>
+                                        {currentUser.role === 'seller' && <span style={{color: 'var(--secondary-color)', fontWeight: 'bold', display: 'block', marginTop: '4px'}}>Seller Account</span>}
+                                    </div>
+                                    <a onClick={() => handleMenuClick('sellItem')}>{currentUser.role === 'seller' ? 'Sell an Item' : 'Post an Ad'}</a>
+                                    <a onClick={() => handleMenuClick('myAds')}>My Posted Ads</a>
+                                    {currentUser.role === 'seller' && (
+                                        <>
+                                            <a onClick={() => handleMenuClick('mySales')}>My Sales</a>
+                                            <a onClick={() => handleMenuClick('mySellerProfile')}>My Seller Profile</a>
+                                        </>
+                                    )}
+                                    <a onClick={() => handleMenuClick('myOrders')}>My Orders (Purchases)</a>
+                                    <a onClick={onLogout}>Logout</a>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <button className="btn-primary" onClick={onShowLogin}>Login / Sign Up</button>
+                    )}
+                </div>
+            </div>
+        </header>
+    );
+};
+
+
+// --- AUTHENTICATION PAGE ---
+const LoginPage = ({ onLoginSuccess, onCancel, showToast }) => {
+    const [name, setName] = useState('');
+    const [mobile, setMobile] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    const handleLogin = async () => {
+        if (name.trim().length < 3) {
+            showToast('Please enter a valid name (at least 3 characters).', 'error');
+            return;
+        }
+        if (mobile.length !== 10 || !/^\d{10}$/.test(mobile)) {
+            showToast('Please enter a valid 10-digit mobile number.', 'error');
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const phoneNumber = `+91${mobile}`;
+            const userDocRef = db.collection('users').doc(phoneNumber);
+            const userDoc = await userDocRef.get();
+            
+            if (userDoc.exists) {
+                const userData = userDoc.data();
+                if (userData && userData.name !== name) {
+                     await userDocRef.update({ name });
+                }
+                onLoginSuccess({ ...userData, name, mobile: phoneNumber }, 'Login successful. Welcome back!');
+
+            } else {
+                 const newUser = {
+                    name: name,
+                    mobile: phoneNumber,
+                    role: 'user', // Default role for new users
+                    brokeragePlan: 'normal', // Default brokerage plan
+                    upiId: '',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                await userDocRef.set(newUser);
+                onLoginSuccess(newUser, 'Registration successful! Welcome to Navrose.');
+            }
+
+        } catch (err) {
+            showToast('An error occurred. Please try again.', 'error');
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="modal-overlay">
+            <div className="modal-content auth-modal">
+                <button className="modal-close-btn" onClick={onCancel}>&times;</button>
+                <h2>Welcome to Navrose</h2>
+                <p>Enter your name and number to continue</p>
+                <div className="form-group">
+                    <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter your name" />
+                </div>
+                <div className="form-group">
+                    <input type="tel" value={mobile} onChange={(e) => setMobile(e.target.value)} placeholder="Enter 10-digit mobile number" maxLength={10}/>
+                </div>
+                <div className="form-group">
+                    <button onClick={handleLogin} disabled={loading || name.length < 3 || mobile.length !== 10}>
+                        {loading ? 'Processing...' : 'Login / Sign Up'}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+
+// --- PRODUCT & OFFER CARDS ---
+const ProductCard = ({ item, onAddToCart }) => {
+    return (
+        <div className="product-card">
+            <div className="image-container">
+                <img src={item.imageBase64 || 'https://via.placeholder.com/300'} alt={item.title || item.name} className="product-image" />
+                <div className="product-info-overlay">
+                    <h3 className="product-title">{item.title || item.name}</h3>
+                    <p className="product-price">₹{item.price}</p>
+                </div>
+            </div>
+            <div className="card-actions">
+                <button className="btn-secondary" onClick={() => onAddToCart(item, 'marketplace')}>
+                    Add to Cart
+                </button>
+            </div>
+        </div>
+    );
+};
+
+const OfferCard = ({ offer }) => (
+    <div className="offer-card">
+        <div className="image-container">
+            <img src={offer.imageBase64 || 'https://via.placeholder.com/300'} alt={offer.title} className="offer-image" />
+            <div className="offer-info-overlay">
+                <h3 className="offer-title">{offer.title}</h3>
+                <p className="offer-description">{offer.description}</p>
+            </div>
+        </div>
+    </div>
+);
+
+// --- SLIDER COMPONENTS ---
+const ProductSlider = ({ items, onAddToCart, type, title }) => {
+    const trackRef = useRef(null);
+    const scroll = (direction) => {
+        if (trackRef.current) {
+            const scrollAmount = trackRef.current.offsetWidth * 0.8;
+            trackRef.current.scrollLeft += direction === 'next' ? scrollAmount : -scrollAmount;
+        }
+    };
+
+    if (!items || items.length === 0) return null;
+
+    return (
+        <section className="category-section">
+            <h2>{title}</h2>
+            <div className="slider-container">
+                <button className="slider-btn prev" onClick={() => scroll('prev')}>&#10094;</button>
+                <div className="slider-track" ref={trackRef}>
+                    {items.map(item => (
+                        <div className="slider-item" key={`${type}-${item.id}`}>
+                            <ProductCard item={item} onAddToCart={onAddToCart} />
+                        </div>
+                    ))}
+                </div>
+                <button className="slider-btn next" onClick={() => scroll('next')}>&#10095;</button>
+            </div>
+        </section>
+    );
+};
+
+const OfferSlider = ({ offers, title }) => {
+    const trackRef = useRef(null);
+    const scroll = (direction) => {
+        if (trackRef.current) {
+            const scrollAmount = trackRef.current.offsetWidth * 0.8;
+            trackRef.current.scrollLeft += direction === 'next' ? scrollAmount : -scrollAmount;
+        }
+    };
+    if (!offers || offers.length === 0) return null;
+    return (
+        <section className="category-section">
+            <h2>{title}</h2>
+            <div className="slider-container">
+                <button className="slider-btn prev" onClick={() => scroll('prev')}>&#10094;</button>
+                <div className="slider-track" ref={trackRef}>
+                    {offers.map(offer => (
+                        <div className="slider-item" key={`offer-${offer.id}`}>
+                            <OfferCard offer={offer} />
+                        </div>
+                    ))}
+                </div>
+                <button className="slider-btn next" onClick={() => scroll('next')}>&#10095;</button>
+            </div>
+        </section>
+    );
+};
+
+
+// --- VIEWS / PAGES ---
+const HomePage = ({ onAddToCart }) => {
+    const [ads, setAds] = useState([]);
+    const [boosterOffers, setBoosterOffers] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // Fetch ads without server-side ordering to prevent index errors
+                const adsSnap = await db.collection('ads').where('status', '==', 'approved').limit(10).get();
+                const adsData = adsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                // Sort client-side
+                adsData.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+                setAds(adsData);
+                
+                const boosterSnap = await db.collection('boosterOffers').orderBy('createdAt', 'desc').limit(8).get();
+                setBoosterOffers(boosterSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+
+            } catch (error) {
+                console.error("Error fetching homepage data:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
+
+    if (loading) return <LoadingSpinner />;
+
+    return (
+        <main className="main-content">
+            <OfferSlider title="Today's Flash Offers" offers={boosterOffers} />
+            <ProductSlider title="Marketplace" items={ads} onAddToCart={onAddToCart} type="marketplace" />
+        </main>
+    );
+};
+
+const FlashOffersPage = () => {
+    const [offers, setOffers] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchOffers = async () => {
+            try {
+                const boosterSnap = await db.collection('boosterOffers')
+                    .orderBy('createdAt', 'desc')
+                    .get();
+                setOffers(boosterSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+            } catch (error) {
+                console.error("Error fetching flash offers:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchOffers();
+    }, []);
+
+    if (loading) return <LoadingSpinner />;
+
+    return (
+        <main className="main-content">
+            <section className="category-section">
+                <h2>Flash Offers</h2>
+                {offers.length > 0 ? (
+                     <div className="product-grid">
+                        {offers.map((offer) => <OfferCard key={offer.id} offer={offer} />)}
+                    </div>
+                ) : (
+                    <p>No flash offers available at the moment. Stay tuned!</p>
+                )}
+            </section>
+        </main>
+    );
+};
+
+
+const PostAdPage = ({ currentUser, onAdPosted, showToast }) => {
+    const [title, setTitle] = useState('');
+    const [price, setPrice] = useState('');
+    const [imageBase64, setImageBase64] = useState(null);
+    const [promoCode, setPromoCode] = useState('');
+    const [promoDiscount, setPromoDiscount] = useState('');
+    const [promoIsActive, setPromoIsActive] = useState(true);
+    const [loading, setLoading] = useState(false);
+    
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            const adData = {
+                title,
+                price: Number(price),
+                imageBase64,
+                user: currentUser.mobile,
+                status: 'pending',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                promoCode: {
+                    code: promoCode,
+                    discountPercent: Number(promoDiscount) || 0,
+                    isActive: promoIsActive,
+                }
+            };
+
+            await db.collection('ads').add(adData);
+            showToast('Ad submitted for approval!','success');
+            onAdPosted();
+        } catch (error) {
+            console.error("Error posting ad: ", error);
+            showToast('Failed to post ad.', 'error');
+        } finally {
+            setLoading(false);
+        }
+    };
+    
+    const handleFileChange = async (e) => {
+        if (e.target.files && e.target.files[0]) {
+            const base64 = await compressImageToBase64(e.target.files[0]);
+            setImageBase64(base64);
+        }
+    };
+
+    return (
+        <main className="main-content">
+            <div className="form-container">
+                <h2>{currentUser.role === 'seller' ? 'Sell a New Item' : 'Post a New Ad'}</h2>
+                <form onSubmit={handleSubmit}>
+                    <div className="form-group">
+                        <label>Item Title</label>
+                        <input type="text" value={title} onChange={e => setTitle(e.target.value)} required />
+                    </div>
+                    <div className="form-group">
+                        <label>Price (₹)</label>
+                        <input type="number" value={price} onChange={e => setPrice(e.target.value)} required />
+                    </div>
+                    <div className="form-group">
+                        <label>Image</label>
+                        <input type="file" accept="image/*" onChange={handleFileChange} required />
+                        {imageBase64 && <img src={imageBase64} alt="Preview" className="image-preview" />}
+                    </div>
+                    
+                    {currentUser.role === 'seller' && (
+                        <div className="promo-code-section">
+                            <h4>Promo Code (Optional)</h4>
+                            <div className="promo-flex">
+                                <div className="form-group">
+                                    <label>Code</label>
+                                    <input type="text" value={promoCode} onChange={e => setPromoCode(e.target.value.toUpperCase())} placeholder="e.g., SAVE5"/>
+                                </div>
+                                <div className="form-group">
+                                    <label>Discount %</label>
+                                    <input type="number" value={promoDiscount} onChange={e => setPromoDiscount(e.target.value)} min="1" max="5" placeholder="1-5" />
+                                </div>
+                            </div>
+                             <div className="toggle-switch form-group">
+                                <label>
+                                    <input type="checkbox" checked={promoIsActive} onChange={e => setPromoIsActive(e.target.checked)} />
+                                    Active
+                                </label>
+                            </div>
+                        </div>
+                    )}
+
+                    <button type="submit" className="btn-primary" disabled={loading} style={{width: '100%', marginTop: '1.5rem'}}>{loading ? 'Submitting...' : 'Submit for Approval'}</button>
+                </form>
+            </div>
+        </main>
+    );
+};
+
+const MySellerProfilePage = ({ currentUser, onProfileUpdated, showToast }) => {
+    const [name, setName] = useState('');
+    const [upiId, setUpiId] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (currentUser) {
+            setName(currentUser.name || '');
+            setUpiId(currentUser.upiId || '');
+        }
+    }, [currentUser]);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!upiId) {
+            showToast('Please enter your UPI ID to receive payments.', 'error');
+            return;
+        }
+        setLoading(true);
+        try {
+            const userRef = db.collection('users').doc(currentUser.mobile);
+            await userRef.update({
+                name,
+                upiId
+            });
+            onProfileUpdated({ ...currentUser, name, upiId });
+            showToast('Profile updated successfully!', 'success');
+        } catch (error) {
+            console.error("Error updating seller profile: ", error);
+            showToast('Failed to update profile.', 'error');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <main className="main-content">
+            <div className="form-container">
+                <h2>My Seller Profile</h2>
+                <form onSubmit={handleSubmit}>
+                    <div className="form-group">
+                        <label>Full Name</label>
+                        <input type="text" value={name} onChange={e => setName(e.target.value)} required />
+                    </div>
+                    <div className="form-group">
+                        <label>Your UPI ID (for receiving payments)</label>
+                        <input type="text" value={upiId} onChange={e => setUpiId(e.target.value)} placeholder="e.g., yourname@okbank" required />
+                    </div>
+                    <button type="submit" className="btn-primary" disabled={loading}>{loading ? 'Saving...' : 'Save Changes'}</button>
+                </form>
+            </div>
+        </main>
+    );
+};
+
+const MyAdsPage = ({ currentUser }) => {
+    const [myAds, setMyAds] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchAds = async () => {
+            if (!currentUser || !currentUser.mobile) {
+                setLoading(false);
+                return;
+            }
+            try {
+                const snapshot = await db.collection('ads').where('user', '==', currentUser.mobile).get();
+                const adsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                adsData.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+                setMyAds(adsData);
+            } catch (error) { console.error("Error fetching my ads: ", error); }
+            finally { setLoading(false); }
+        };
+        fetchAds();
+    }, [currentUser]);
+
+    if (loading) return <LoadingSpinner />;
+
+    return (
+        <main className="main-content">
+            <h2>My Posted Ads</h2>
+            <div className="list-container">
+                {myAds.length === 0 ? <p>You haven't posted any ads yet.</p> :
+                    myAds.map(ad => (
+                        <div key={ad.id} className="list-item">
+                            <img src={ad.imageBase64 || 'https://via.placeholder.com/100'} alt={ad.title} />
+                            <div className="item-details">
+                                <h4>{ad.title}</h4>
+                                <p>Price: ₹{ad.price}</p>
+                            </div>
+                            <span className={`status-badge status-${ad.status}`}>{ad.status}</span>
+                        </div>
+                    ))
+                }
+            </div>
+        </main>
+    );
+};
+
+const MyOrdersPage = ({ currentUser, onViewProof }) => { // Buyer's view
+    const [orders, setOrders] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (!currentUser || !currentUser.mobile) { setLoading(false); return; }
+        const fetchOrders = async () => {
+            try {
+                // Fetch orders without server-side ordering to prevent index errors
+                const ordersSnap = await db.collection('p2p_orders').where('buyerId', '==', currentUser.mobile).get();
+                const ordersData = ordersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                // Sort client-side
+                ordersData.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+                setOrders(ordersData);
+            } catch (error) {
+                console.error("Error fetching my orders: ", error);
+            } finally { setLoading(false); }
+        };
+        fetchOrders();
+    }, [currentUser]);
+
+    if (loading) return <LoadingSpinner />;
+
+    return (
+        <main className="main-content">
+            <h2>My Orders (Purchases)</h2>
+            <div className="list-container">
+                {orders.length === 0 ? (
+                    <p>You have no past orders.</p>
+                ) : (
+                    orders.map(order => (
+                        <div key={order.id} className="order-list-item" style={{flexWrap: 'wrap'}}>
+                            <div className="order-header" style={{width: '100%'}}>
+                                <div>
+                                    <h4>Order ID: {order.id.substring(0, 8).toUpperCase()}</h4>
+                                    <p>Seller: {order.sellerId}</p>
+                                    <p>Placed on: {order.createdAt?.toDate().toLocaleDateString()}</p>
+                                </div>
+                                <div className="order-summary">
+                                    <span className={`status-badge status-${order.status}`}>{order.status.replace('_', ' ')}</span>
+                                    <p className="order-total">Total: ₹{(order.totalAmount || 0).toFixed(2)}</p>
+                                </div>
+                            </div>
+                             <ul className="order-items" style={{width: '100%'}}>
+                                {(order.items || []).map((item, index) => (
+                                    <li key={index} className="order-item-detail">
+                                        <span>{item.title} (x{item.quantity})</span>
+                                        <span>₹{(item.price * item.quantity).toFixed(2)}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                            {order.paymentProofImage && (
+                                <div style={{marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)', width: '100%'}}>
+                                    <button className="btn-primary" style={{width: 'auto'}} onClick={() => onViewProof(order.paymentProofImage)}>
+                                        View Payment Proof
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    ))
+                )}
+            </div>
+        </main>
+    );
+};
+
+const MySalesPage = ({ currentUser, showToast, onViewProof }) => { // Seller's view
+    const [sales, setSales] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    const fetchSales = async () => {
+        if (!currentUser || !currentUser.mobile) { setLoading(false); return; }
+        try {
+            const salesSnap = await db.collection('p2p_orders').where('sellerId', '==', currentUser.mobile).get();
+            const salesData = salesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            salesData.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+            setSales(salesData);
+        } catch (error) { console.error("Error fetching sales: ", error); }
+        finally { setLoading(false); }
+    };
+    
+    useEffect(() => { fetchSales(); }, [currentUser]);
+    
+    const handleStatusUpdate = async (orderId, newStatus, buyerId) => {
+        try {
+            const orderRef = db.collection('p2p_orders').doc(orderId);
+            await orderRef.update({ status: newStatus });
+            
+            // Send notification to buyer
+            await db.collection('notifications').add({
+                userId: buyerId,
+                message: `Your order #${orderId.substring(0,8).toUpperCase()} is now '${newStatus.replace('_', ' ')}'.`,
+                link: 'myOrders',
+                read: false,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            showToast('Order status updated!', 'success');
+            fetchSales(); // Refresh the list
+        } catch (error) {
+            showToast('Failed to update status.', 'error');
+            console.error("Error updating status:", error);
+        }
+    };
+    
+    const statusOptions = ['pending_payment', 'payment_verified', 'shipped', 'delivered', 'cancelled'];
+
+    if (loading) return <LoadingSpinner />;
+
+    return (
+        <main className="main-content">
+            <h2>My Sales</h2>
+            <div className="list-container">
+                {sales.length === 0 ? (
+                    <p>You have no sales yet.</p>
+                ) : (
+                    sales.map(order => (
+                        <div key={order.id} className="order-list-item">
+                            <div className="order-header">
+                                <div>
+                                    <h4>Order ID: {order.id.substring(0, 8).toUpperCase()}</h4>
+                                    <p>Buyer: {order.buyerId}</p>
+                                     <p>Placed on: {order.createdAt?.toDate().toLocaleDateString()}</p>
+                                </div>
+                                <div className="order-summary">
+                                    <span className={`status-badge status-${order.status}`}>{order.status.replace('_', ' ')}</span>
+                                    <p className="order-total">Total: ₹{(order.totalAmount || 0).toFixed(2)}</p>
+                                </div>
+                            </div>
+                             <ul className="order-items">
+                                {(order.items || []).map((item, index) => (
+                                    <li key={index} className="order-item-detail">
+                                        <span>{item.title} (x{item.quantity})</span>
+                                        <span>₹{(item.price * item.quantity).toFixed(2)}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                            <div className="seller-actions">
+                                <span>Update Status:</span>
+                                <select 
+                                  value={order.status} 
+                                  onChange={(e) => handleStatusUpdate(order.id, e.target.value, order.buyerId)}
+                                >
+                                    {statusOptions.map(s => <option key={s} value={s}>{s.replace('_', ' ')}</option>)}
+                                </select>
+                                <a href={`https://wa.me/${(order.buyerId || '').replace('+', '')}`} target="_blank" rel="noopener noreferrer" className="btn-whatsapp">
+                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21h.01c5.46 0 9.91-4.45 9.91-9.91s-4.45-9.91-9.91-9.91zM17.18 15.4c-.28-.14-1.65-.81-1.9-.91-.25-.09-.44-.14-.62.14-.18.28-.72.91-.88 1.1-.16.18-.32.21-.59.06-.28-.14-1.17-.43-2.23-1.38-.83-.74-1.39-1.65-1.55-1.93-.16-.28-.02-.43.12-.57.13-.13.28-.32.41-.48.14-.16.18-.28.28-.46.09-.18.05-.37-.02-.51s-.62-1.5-.85-2.05c-.22-.55-.45-.48-.62-.48-.16 0-.35-.02-.53-.02s-.47.07-.72.35c-.25.28-.96.93-1.18 2.25-.22 1.32.74 2.6 1.46 3.73.72 1.13 2.35 2.8 5.78 3.6.86.21 1.54.34 2.08.43.79.14 1.5.12 2.07-.07.63-.21 1.65-.68 1.88-1.33.24-.65.24-1.21.16-1.33-.07-.14-.26-.22-.53-.36z"></path></svg>
+                                    Chat with Buyer
+                                </a>
+                                {order.paymentProofImage && <button className="btn-primary" onClick={() => onViewProof(order.paymentProofImage)}>View Proof</button>}
+                            </div>
+                        </div>
+                    ))
+                )}
+            </div>
+        </main>
+    );
+};
+
+
+const CartPage = ({ cart, onUpdateQuantity, onRemove, onConfirm, onCancel, isSubmitting, currentUser, brokerageSettings, showToast }) => {
+    const [promoCodeInput, setPromoCodeInput] = useState('');
+    const [appliedPromo, setAppliedPromo] = useState(null);
+
+    const cartSellerId = useMemo(() => cart.length > 0 ? cart[0].user : null, [cart]);
+    const isMixedSellerCart = useMemo(() => {
+        if (cart.length <= 1) return false;
+        const firstSellerId = cart[0].user;
+        return cart.some(item => item.user !== firstSellerId);
+    }, [cart]);
+
+    const subtotal = useMemo(() => cart.reduce((total, item) => total + (item.price || 0) * (item.quantity || 1), 0), [cart]);
+
+    const discountAmount = useMemo(() => {
+        if (!appliedPromo) return 0;
+        return subtotal * (appliedPromo.discountPercent / 100);
+    }, [subtotal, appliedPromo]);
+
+    const priceAfterDiscount = subtotal - discountAmount;
+
+    const buyerBrokerageFee = useMemo(() => {
+        if (!currentUser || !brokerageSettings) return 0;
+        const plan = currentUser.brokeragePlan || 'normal';
+        const rate = brokerageSettings[plan] || 0;
+        return priceAfterDiscount * (rate / 100);
+    }, [currentUser, brokerageSettings, priceAfterDiscount]);
+    
+    const finalTotal = priceAfterDiscount + buyerBrokerageFee;
+    
+    const sellerBrokerageFee = useMemo(() => {
+        if (!brokerageSettings) return 0;
+        const rate = brokerageSettings['seller'] || 0;
+        return priceAfterDiscount * (rate / 100);
+    }, [brokerageSettings, priceAfterDiscount]);
+
+    const handleApplyPromo = () => {
+        const itemWithPromo = cart.find(item => item.promoCode?.code === promoCodeInput.toUpperCase() && item.promoCode?.isActive);
+        if (itemWithPromo) {
+            setAppliedPromo(itemWithPromo.promoCode);
+            showToast(`Promo code '${itemWithPromo.promoCode.code}' applied!`, 'success');
+        } else {
+            setAppliedPromo(null);
+            showToast('Invalid or inactive promo code.', 'error');
+        }
+    };
+
+    const handleConfirm = () => {
+        onConfirm({
+            cart,
+            subtotal,
+            discountAmount,
+            appliedPromoCode: appliedPromo ? appliedPromo.code : null,
+            buyerBrokerageFee,
+            sellerBrokerageFee,
+            finalTotal,
+            sellerId: cartSellerId,
+        });
+    };
+
+    return (
+        <div className="modal-overlay">
+            <div className="cart-modal-content">
+                <div className="cart-header">
+                    <h2>Your Cart</h2>
+                    <button className="modal-close-btn" onClick={onCancel}>&times;</button>
+                </div>
+                {cart.length === 0 ? (
+                    <p className="empty-cart-message">Your cart is empty.</p>
+                ) : (
+                    <>
+                        <div className="cart-items-list">
+                            {cart.map(item => (
+                                <div className="cart-item" key={item.id}>
+                                    <img src={item.imageBase64 || 'https://via.placeholder.com/100'} alt={item.title || item.name} />
+                                    <div className="cart-item-info">
+                                        <h4>{item.title || item.name}</h4>
+                                        <p>₹{item.price}</p>
+                                    </div>
+                                    <div className="cart-item-actions">
+                                        <div className="quantity-control">
+                                            <button onClick={() => onUpdateQuantity(item.id, item.quantity - 1)} disabled={item.quantity <= 1}>-</button>
+                                            <span>{item.quantity}</span>
+                                            <button onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}>+</button>
+                                        </div>
+                                        <button className="btn-remove" onClick={() => onRemove(item.id)}>Remove</button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        {isMixedSellerCart && (
+                            <p className="mixed-cart-warning">
+                                You can only order from one seller at a time. Please create separate orders.
+                            </p>
+                        )}
+                        <div className="cart-summary">
+                            <div className="promo-code-area">
+                                <input 
+                                    type="text" 
+                                    placeholder="Enter promo code"
+                                    value={promoCodeInput}
+                                    onChange={(e) => setPromoCodeInput(e.target.value)}
+                                />
+                                <button className="btn-secondary" onClick={handleApplyPromo}>Apply</button>
+                            </div>
+                            <div className="totals-section">
+                                <div className="summary-line">
+                                    <span>Subtotal</span>
+                                    <span>₹{subtotal.toFixed(2)}</span>
+                                </div>
+                                {appliedPromo && (
+                                    <div className="summary-line discount-success">
+                                        <span>Discount ({appliedPromo.code})</span>
+                                        <span>- ₹{discountAmount.toFixed(2)}</span>
+                                    </div>
+                                )}
+                                {buyerBrokerageFee > 0 && (
+                                    <div className="summary-line">
+                                        <span>Platform Fee</span>
+                                        <span>+ ₹{buyerBrokerageFee.toFixed(2)}</span>
+                                    </div>
+                                )}
+                                <div className="summary-line total">
+                                    <span>Total Payable</span>
+                                    <span>₹{finalTotal.toFixed(2)}</span>
+                                </div>
+                            </div>
+                            <button className="btn-primary" onClick={handleConfirm} disabled={isSubmitting || isMixedSellerCart}>
+                                {isSubmitting ? 'Proceeding...' : 'Confirm Order'}
+                            </button>
+                        </div>
+                    </>
+                )}
+            </div>
+        </div>
+    );
+};
+
+
+// --- MAIN APP COMPONENT ---
+const App = () => {
+    const [currentUser, setCurrentUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [view, setView] = useState('home');
+    const [showLogin, setShowLogin] = useState(false);
+    const [actionQueue, setActionQueue] = useState(null);
+    const [cart, setCart] = useState([]);
+    const [showCart, setShowCart] = useState(false);
+    const [showChatbot, setShowChatbot] = useState(false);
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [orderConfirmation, setOrderConfirmation] = useState({ show: false, message: '' });
+    const [pendingOrder, setPendingOrder] = useState(null);
+    const [sellerUpiForPayment, setSellerUpiForPayment] = useState('');
+    const [viewingProof, setViewingProof] = useState(null);
+    const [toast, setToast] = useState({ show: false, message: '', type: '' });
+    const [brokerageSettings, setBrokerageSettings] = useState(null);
+
+
+    useEffect(() => {
+        // Fetch brokerage settings once
+        const fetchSettings = async () => {
+            try {
+                const settingsDoc = await db.collection('app_settings').doc('brokerage').get();
+                if (settingsDoc.exists) {
+                    setBrokerageSettings(settingsDoc.data());
+                } else {
+                    console.warn("Brokerage settings not found in Firestore.");
+                    setBrokerageSettings({ normal: 0, buyer: 0, seller: 0 }); // Default fallback
+                }
+            } catch (error) {
+                console.error("Error fetching brokerage settings:", error);
+            }
+        };
+
+        const loadUser = () => {
+             try {
+                const storedUser = localStorage.getItem('navroseUser');
+                if (storedUser) {
+                    setCurrentUser(JSON.parse(storedUser));
+                }
+            } catch (error) {
+                console.error("Failed to parse user from localStorage", error);
+                localStorage.removeItem('navroseUser');
+            } finally {
+                setLoading(false);
+            }
+        };
+        
+        fetchSettings();
+        loadUser();
+
+    }, []);
+    
+    const showToast = (message, type = 'success') => {
+        setToast({ show: true, message, type });
+    };
+    const hideToast = () => {
+        setToast(prev => ({ ...prev, show: false }));
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('navroseUser');
+        setCurrentUser(null);
+        setView('home');
+    };
+    
+    const handleLoginSuccess = async (user, successMessage) => {
+        // Fetch latest user data to get brokeragePlan
+        const userRef = db.collection('users').doc(user.mobile);
+        const userDoc = await userRef.get();
+        const latestUserData = userDoc.exists ? userDoc.data() : user;
+
+        localStorage.setItem('navroseUser', JSON.stringify(latestUserData));
+        setCurrentUser(latestUserData);
+        setShowLogin(false);
+        if (successMessage) {
+            showToast(successMessage, 'success');
+        }
+        
+        if (actionQueue) {
+            actionQueue();
+            setActionQueue(null);
+        }
+    };
+    
+    const handleProfileUpdated = (updatedUser) => {
+        setCurrentUser(updatedUser);
+        localStorage.setItem('navroseUser', JSON.stringify(updatedUser));
+    };
+
+    const handleAddToCart = (item, type) => {
+        if (currentUser && item.user === currentUser.mobile) {
+            showToast("You cannot buy your own item.", "error");
+            return;
+        }
+        setCart(prevCart => {
+            const existingItem = prevCart.find(cartItem => cartItem.id === item.id);
+            if (existingItem) {
+                showToast(`${item.title || item.name} is already in your cart.`, 'info');
+                return prevCart;
+            }
+            showToast(`${item.title || item.name} added to cart!`, 'success');
+            return [...prevCart, { ...item, quantity: 1, type }];
+        });
+    };
+
+    const handleUpdateCartQuantity = (itemId, newQuantity) => {
+        if (newQuantity < 1) return;
+        setCart(prevCart => prevCart.map(item => item.id === itemId ? { ...item, quantity: newQuantity } : item));
+    };
+
+    const handleRemoveFromCart = (itemId) => {
+        setCart(prevCart => prevCart.filter(item => item.id !== itemId));
+    };
+
+    const handleConfirmOrder = async (orderSummary) => {
+        if (!currentUser) {
+            setActionQueue(() => () => handleConfirmOrder(orderSummary));
+            setShowCart(false);
+            setShowLogin(true);
+            return;
+        }
+
+        if (cart.length === 0) {
+            showToast("Your cart is empty.", 'error');
+            return;
+        }
+
+        try {
+            const sellerRef = db.collection('users').doc(orderSummary.sellerId);
+            const sellerDoc = await sellerRef.get();
+            if (!sellerDoc.exists || !sellerDoc.data().upiId) {
+                showToast("The seller has not set up their payment information. Cannot proceed.", "error");
+                return;
+            }
+            setSellerUpiForPayment(sellerDoc.data().upiId);
+            setPendingOrder(orderSummary);
+            setShowCart(false);
+            setShowPaymentModal(true);
+        } catch (error) {
+            showToast("Could not fetch seller details. Please try again.", "error");
+            console.error("Error fetching seller for payment:", error);
+        }
+    };
+
+    const handleSubmitOrderWithProof = async (paymentProofBase64) => {
+        if (!pendingOrder) {
+            showToast("No order to submit.", "error"); return;
+        }
+        if (!paymentProofBase64) {
+            showToast("Please upload payment proof to continue.", "error"); return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            const orderData = {
+                buyerId: currentUser.mobile,
+                sellerId: pendingOrder.sellerId,
+                sellerUpiId: sellerUpiForPayment,
+                items: pendingOrder.cart.map(i => ({ id: i.id, title: i.title, price: i.price, quantity: i.quantity })),
+                subtotal: pendingOrder.subtotal,
+                discountAmount: pendingOrder.discountAmount,
+                promoCodeApplied: pendingOrder.appliedPromoCode,
+                buyerBrokerageFee: pendingOrder.buyerBrokerageFee,
+                sellerBrokerageFee: pendingOrder.sellerBrokerageFee,
+                totalAmount: pendingOrder.finalTotal, // This is what the buyer pays
+                status: 'pending_payment',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                paymentProofImage: paymentProofBase64,
+            };
+            
+            await db.collection('p2p_orders').add(orderData);
+            
+            // Notify Seller
+            await db.collection('notifications').add({
+                userId: pendingOrder.sellerId,
+                message: `You have a new order from ${currentUser.name} for ₹${pendingOrder.finalTotal.toFixed(2)}.`,
+                link: 'mySales',
+                read: false,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            // Success
+            setCart([]);
+            setShowPaymentModal(false);
+            setPendingOrder(null);
+            setOrderConfirmation({ show: true, message: 'Your order has been submitted! The seller will verify your payment and confirm.' });
+        } catch (error) {
+            console.error("Error placing P2P order: ", error);
+            setOrderConfirmation({ show: true, message: `Failed to place order: ${error.message || 'Please try again.'}` });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+
+    const renderView = () => {
+        switch (view) {
+            case 'sellItem': return <PostAdPage currentUser={currentUser} onAdPosted={() => setView('myAds')} showToast={showToast} />;
+            case 'mySellerProfile': return <MySellerProfilePage currentUser={currentUser} onProfileUpdated={handleProfileUpdated} showToast={showToast} />;
+            case 'myAds': return <MyAdsPage currentUser={currentUser} />;
+            case 'myOrders': return <MyOrdersPage currentUser={currentUser} onViewProof={setViewingProof} />;
+            case 'mySales': return <MySalesPage currentUser={currentUser} showToast={showToast} onViewProof={setViewingProof} />;
+            case 'flashOffers': return <FlashOffersPage />;
+            default: return <HomePage onAddToCart={handleAddToCart} />;
+        }
+    };
+    
+    if (loading) {
+        return <LoadingSpinner />;
+    }
+
+    return (
+        <div id="app-container">
+            <Header 
+                currentUser={currentUser} 
+                onLogout={handleLogout} 
+                setView={setView} 
+                onShowLogin={() => setShowLogin(true)}
+                cartItemCount={cart.length}
+                onShowCart={() => setShowCart(true)}
+                onShowChat={() => setShowChatbot(true)}
+            />
+            {renderView()}
+            {showLogin && <LoginPage onLoginSuccess={handleLoginSuccess} onCancel={() => {setShowLogin(false); setActionQueue(null);}} showToast={showToast} />}
+            {showCart && <CartPage cart={cart} onUpdateQuantity={handleUpdateCartQuantity} onRemove={handleRemoveFromCart} onConfirm={handleConfirmOrder} onCancel={() => setShowCart(false)} isSubmitting={isSubmitting} currentUser={currentUser} brokerageSettings={brokerageSettings} showToast={showToast} />}
+            {showChatbot && <ChatbotModal show={showChatbot} onClose={() => setShowChatbot(false)} />}
+            {showPaymentModal && <PaymentModal show={showPaymentModal} onCancel={() => setShowPaymentModal(false)} orderSummary={pendingOrder} onSubmit={handleSubmitOrderWithProof} isSubmitting={isSubmitting} sellerUpiId={sellerUpiForPayment} />}
+            <OrderConfirmationModal show={orderConfirmation.show} message={orderConfirmation.message} onClose={() => setOrderConfirmation({ show: false, message: '' })} />
+            <ImageModal src={viewingProof} onClose={() => setViewingProof(null)} />
+            <Toast show={toast.show} message={toast.message} type={toast.type} onHide={hideToast} />
+        </div>
+    );
+};
+
+const rootElement = document.getElementById('root');
+if (rootElement) {
+    const root = ReactDOM.createRoot(rootElement);
+    root.render(<App />);
+}
+    </script>
+<script type="module" src="/index.tsx"></script>
+
+<script src="./script.js"></script></body></html>
